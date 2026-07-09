@@ -44,7 +44,7 @@ export default async function PaginatedHome({ params }) {
         <div className="posts-grid">
           {posts.map((post) => (
             <Link href={`/posts/${post.slug}`} key={post.id} className="post-card">
-              {post._embedded && post._embedded['wp:featuredmedia'] ? (
+              {post._embedded && post._embedded['wp:featuredmedia'] && (
                 <div className="post-card-image-wrapper">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
@@ -52,12 +52,6 @@ export default async function PaginatedHome({ params }) {
                     alt={post.title.rendered}
                     className="post-card-image"
                   />
-                </div>
-              ) : (
-                <div className="post-card-image-wrapper fallback-image-wrapper">
-                  <div className="fallback-gradient">
-                    <span>మనసు పిలుపు</span>
-                  </div>
                 </div>
               )}
               <div className="post-card-content">
