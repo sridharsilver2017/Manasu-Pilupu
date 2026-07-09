@@ -44,8 +44,7 @@ export default function RootLayout({ children }) {
             <Link href="/" className="logo">
               మనసు పిలుపు
             </Link>
-            <nav style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
-              <GoogleTranslate />
+            <nav>
               <Link href="/support" style={{ fontWeight: 500 }}>
                 Support Me
               </Link>
@@ -55,6 +54,9 @@ export default function RootLayout({ children }) {
           <footer className="site-footer">
             <p>&copy; {new Date().getFullYear()} మనసు పిలుపు. All rights reserved.</p>
             <p className="footer-tagline">మనసులోంచి వచ్చిన మాటలు</p>
+            <div style={{ marginTop: '24px', display: 'flex', justifyContent: 'center' }}>
+              <GoogleTranslate />
+            </div>
           </footer>
         </div>
       </body>
