@@ -50,6 +50,10 @@ export default function RootLayout({ children }) {
             </nav>
           </header>
           <main className="animate-fade-in">{children}</main>
+          <footer className="site-footer">
+            <p>&copy; {new Date().getFullYear()} మనసు పిలుపు. All rights reserved.</p>
+            <p className="footer-tagline">మనసులోంచి వచ్చిన మాటలు</p>
+          </footer>
         </div>
       </body>
     </html>
