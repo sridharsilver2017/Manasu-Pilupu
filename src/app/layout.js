@@ -1,6 +1,7 @@
 import "./globals.css";
 import Link from "next/link";
 import { Ramabhadra, Mandali } from "next/font/google";
+import GoogleTranslate from '@/components/GoogleTranslate';
 
 const ramabhadra = Ramabhadra({ 
   weight: "400", 
@@ -43,7 +44,8 @@ export default function RootLayout({ children }) {
             <Link href="/" className="logo">
               మనసు పిలుపు
             </Link>
-            <nav>
+            <nav style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
+              <GoogleTranslate />
               <Link href="/support" style={{ fontWeight: 500 }}>
                 Support Me
               </Link>

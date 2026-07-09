@@ -38,6 +38,33 @@ body {
   color: var(--text-color);
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
+  top: 0 !important; /* Prevent Google Translate from pushing body down */
+}
+
+/* Hide Google Translate Top Bar */
+.skiptranslate iframe {
+  display: none !important;
+}
+
+/* Style Google Translate Dropdown slightly */
+#google_translate_element select {
+  padding: 4px 8px;
+  border-radius: 4px;
+  border: 1px solid var(--border-color);
+  background-color: var(--card-bg);
+  color: var(--text-color);
+  font-size: 0.9rem;
+  font-family: inherit;
+  cursor: pointer;
+  outline: none;
+}
+#google_translate_element .goog-te-gadget {
+  font-family: inherit !important;
+  color: transparent !important;
+  font-size: 0;
+}
+#google_translate_element .goog-te-gadget .goog-te-combo {
+  margin: 0;
 }
 
 a {
