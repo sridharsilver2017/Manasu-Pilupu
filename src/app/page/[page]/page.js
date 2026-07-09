@@ -3,8 +3,23 @@ import Link from 'next/link';
 import { getPaginatedPosts } from '@/lib/api';
 import Pagination from '@/components/Pagination';
 
-export default async function Home() {
-  const currentPage = 1;
+export async function generateStaticParams() {
+  const { totalPages } = await getPaginatedPosts(1, 9);
+  
+  const paths = [];
+  // We start from page 2, because page 1 is the main homepage (/)
+  for (let i = 2; i <= totalPages; i++) {
+    paths.push({
+      page: i.toString(),
+    });
+  }
+  
+  return paths;
+}
+
+export default async function PaginatedHome({ params }) {
+  const resolvedParams = await params;
+  const currentPage = parseInt(resolvedParams.page, 10);
   const { posts, totalPages } = await getPaginatedPosts(currentPage, 9);
 
   return (
