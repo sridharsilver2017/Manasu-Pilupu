@@ -1,4 +1,4 @@
-const API_URL = 'https://live-sridhar-silver.pantheonsite.io/wp-json/wp/v2';
+const API_URL = 'https://dev-sridhar-silver.pantheonsite.io/wp-json/wp/v2';
 
 export async function getAllPosts() {
   const res = await fetch(`${API_URL}/posts?per_page=100&_embed`, { next: { revalidate: 60 } });

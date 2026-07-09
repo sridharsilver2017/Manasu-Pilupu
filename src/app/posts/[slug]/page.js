@@ -26,7 +26,7 @@ export async function generateMetadata({ params }) {
   // Use featured image or a fallback for social cards
   const imageUrl = post._embedded && post._embedded['wp:featuredmedia'] 
     ? post._embedded['wp:featuredmedia'][0].source_url 
-    : 'https://live-sridhar-silver.pantheonsite.io/wp-content/uploads/2026/07/suryudu-chustunnadu.png';
+    : 'https://dev-sridhar-silver.pantheonsite.io/wp-content/uploads/2026/07/suryudu-chustunnadu.png';
 
   return {
     title: cleanTitle,

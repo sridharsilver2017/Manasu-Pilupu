@@ -15,7 +15,7 @@ const mandali = Mandali({
 });
 
 export const metadata = {
-  metadataBase: new URL('https://live-sridhar-silver.pantheonsite.io'), // Using backend URL as default base if frontend domain is unknown
+  metadataBase: new URL('https://dev-sridhar-silver.pantheonsite.io'), // Using backend URL as default base if frontend domain is unknown
   title: {
     default: "మనసు పిలుపు | మనసులోంచి వచ్చిన మాటలు",
     template: "%s | మనసు పిలుపు"
