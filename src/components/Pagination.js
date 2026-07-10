@@ -12,10 +12,10 @@ export default function Pagination({ currentPage, totalPages }) {
   return (
     <div className="pagination">
       {isFirstPage ? (
-        <span className="pagination-btn disabled">&larr; క్రితం (Prev)</span>
+        <span className="pagination-btn disabled">&larr; క్రితం</span>
       ) : (
         <Link href={currentPage - 1 === 1 ? '/' : `/page/${currentPage - 1}`} className="pagination-btn">
-          &larr; క్రితం (Prev)
+          &larr; క్రితం
         </Link>
       )}
 
@@ -24,10 +24,10 @@ export default function Pagination({ currentPage, totalPages }) {
       </span>
 
       {isLastPage ? (
-        <span className="pagination-btn disabled">తరువాత (Next) &rarr;</span>
+        <span className="pagination-btn disabled">తరువాత &rarr;</span>
       ) : (
         <Link href={`/page/${currentPage + 1}`} className="pagination-btn">
-          తరువాత (Next) &rarr;
+          తరువాత &rarr;
         </Link>
       )}
     </div>

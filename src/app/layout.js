@@ -1,7 +1,7 @@
 import "./globals.css";
 import Link from "next/link";
 import { Ramabhadra, Mandali } from "next/font/google";
-import GoogleTranslate from '@/components/GoogleTranslate';
+
 import { ThemeProvider } from '@/components/ThemeProvider';
 import ThemeToggle from '@/components/ThemeToggle';
 
@@ -43,12 +43,15 @@ export default function RootLayout({ children }) {
       <body suppressHydrationWarning>
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
           <div className="container">
-            <header className="site-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <header className="site-header">
               <Link href="/" className="logo">
                 మనసు పిలుపు
               </Link>
-              <nav style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+              <nav className="site-nav">
                 <ThemeToggle />
+                <Link href="/contact" className="nav-link">
+                  సంప్రదించండి
+                </Link>
                 <Link href="/support" className="support-nav-btn">
                   నన్ను సపోర్ట్ చేయండి
                 </Link>
@@ -58,9 +61,6 @@ export default function RootLayout({ children }) {
             <footer className="site-footer">
               <p>&copy; {new Date().getFullYear()} మనసు పిలుపు. All rights reserved.</p>
               <p className="footer-tagline">మనసులోంచి వచ్చిన మాటలు</p>
-              <div style={{ marginTop: '24px', display: 'flex', justifyContent: 'center' }}>
-                <GoogleTranslate />
-              </div>
             </footer>
           </div>
         </ThemeProvider>

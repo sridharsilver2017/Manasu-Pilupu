@@ -38,7 +38,7 @@ export default async function PaginatedHome({ params }) {
 
       <section className="articles-section animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
         <div className="section-header">
-          <h2>తాజా వ్యాసాలు (Latest Articles)</h2>
+          <h2>తాజా వ్యాసాలు</h2>
         </div>
 
         <div className="posts-grid">
@@ -65,7 +65,9 @@ export default async function PaginatedHome({ params }) {
                 />
                 <div className="post-card-meta">
                   <span>{new Date(post.date).toLocaleDateString()}</span>
-                  <span className="read-more-btn">Read more &rarr;</span>
+                  <span className="read-more-link">
+                    మరింత చదవండి <span className="arrow">&rarr;</span>
+                  </span>
                 </div>
               </div>
             </Link>
