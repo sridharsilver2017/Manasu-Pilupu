@@ -72,7 +72,7 @@ export default async function Post({ params }) {
             dangerouslySetInnerHTML={{ __html: post.title.rendered }}
           />
           <div className="post-meta">
-            <span>Published on {new Date(post.date).toLocaleDateString()}</span>
+            <span>{new Date(post.date).toLocaleDateString()}</span>
           </div>
         </header>
       </div>

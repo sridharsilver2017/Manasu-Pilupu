@@ -10,7 +10,7 @@ export default async function Home() {
   return (
     <div className="home-wrapper">
       <section className="hero-section animate-fade-in-up">
-        <h1 className="hero-title">మనసు పిలుపు</h1>
+        <h1 className="hero-title text-gradient">మనసు పిలుపు</h1>
         <p className="hero-subtitle">
           మనసులోంచి వచ్చిన మాటలు
         </p>
