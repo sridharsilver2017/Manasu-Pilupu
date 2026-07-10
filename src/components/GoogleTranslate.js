@@ -58,10 +58,17 @@ export default function GoogleTranslate() {
   }, []);
 
   const changeLanguage = (langCode, langName) => {
+    if (langCode === 'te') {
+      document.cookie = "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+      document.cookie = "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; domain=" + location.hostname + "; path=/;";
+      window.location.reload();
+      return;
+    }
+
     const select = document.querySelector('.goog-te-combo');
     if (!select) return;
 
-    select.value = langCode === 'te' ? '' : langCode;
+    select.value = langCode;
     select.dispatchEvent(new Event('change'));
     
     setCurrentLang(langName);

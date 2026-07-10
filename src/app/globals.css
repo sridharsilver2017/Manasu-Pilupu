@@ -151,12 +151,23 @@ body {
   color: var(--primary-color);
 }
 
+
 .no-results {
   padding: 12px;
   text-align: center;
   color: var(--text-color);
   opacity: 0.6;
   font-size: 0.9rem;
+}
+
+/* Hide Google Translate top banner and frame */
+.goog-te-banner-frame.skiptranslate, 
+#goog-gt-tt {
+  display: none !important;
+}
+
+body {
+  top: 0 !important;
 }
 
 
