@@ -1,36 +1,55 @@
 "use client";
 
 import { useEffect, useState, useRef } from 'react';
-import { Globe, X } from 'lucide-react';
+import { Languages, Search, ChevronDown } from 'lucide-react';
 
 export default function GoogleTranslate() {
+  const [languages, setLanguages] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
-  const menuRef = useRef(null);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [currentLang, setCurrentLang] = useState('తెలుగు (Telugu)');
+  const dropdownRef = useRef(null);
 
   useEffect(() => {
-    // Check if script is already injected
-    if (document.getElementById('google-translate-script')) return;
+    // Inject Google Translate script if not already present
+    if (!document.getElementById('google-translate-script')) {
+      window.googleTranslateElementInit = () => {
+        new window.google.translate.TranslateElement(
+          { pageLanguage: 'te', autoDisplay: false },
+          'google_translate_element'
+        );
+      };
 
-    // Google Translate initialization function
-    window.googleTranslateElementInit = () => {
-      new window.google.translate.TranslateElement(
-        { pageLanguage: 'te', autoDisplay: false },
-        'google_translate_element'
-      );
-    };
+      const script = document.createElement('script');
+      script.id = 'google-translate-script';
+      script.src = '//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit';
+      script.async = true;
+      document.body.appendChild(script);
+    }
 
-    // Inject the script
-    const script = document.createElement('script');
-    script.id = 'google-translate-script';
-    script.src = '//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit';
-    script.async = true;
-    document.body.appendChild(script);
+    // Poll for the native select element to load options
+    const intervalId = setInterval(() => {
+      const selectEl = document.querySelector('.goog-te-combo');
+      if (selectEl && selectEl.options.length > 0) {
+        let extractedLangs = Array.from(selectEl.options)
+          .map(opt => ({ code: opt.value, name: opt.text }))
+          .filter(opt => opt.code !== '' && opt.code !== 'te'); // filter out placeholder and existing te
+        
+        // Force Telugu to always be the very first option at the top
+        extractedLangs.unshift({ code: 'te', name: 'తెలుగు (Telugu)' });
+        
+        setLanguages(extractedLangs);
+        clearInterval(intervalId);
+      }
+    }, 500);
+
+    return () => clearInterval(intervalId);
   }, []);
 
-  // Close menu when clicking outside
+  // Close dropdown when clicking outside
   useEffect(() => {
     function handleClickOutside(event) {
-      if (menuRef.current && !menuRef.current.contains(event.target)) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setIsOpen(false);
       }
     }
@@ -38,104 +57,80 @@ export default function GoogleTranslate() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const changeLanguage = (langCode) => {
+  const changeLanguage = (langCode, langName) => {
     const select = document.querySelector('.goog-te-combo');
     if (!select) return;
-    
-    // Set the select value to the language code or empty string for original
+
     select.value = langCode === 'te' ? '' : langCode;
-    
-    // Dispatch a change event so the Google script picks it up
     select.dispatchEvent(new Event('change'));
+    
+    setCurrentLang(langName);
     setIsOpen(false);
+    setSearchTerm(''); // Reset search on select
   };
 
+  const filteredLanguages = languages.filter(lang => 
+    lang.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
-    <>
-      {/* Hidden native widget */}
-      <div 
-        id="google_translate_element" 
-        style={{ opacity: 0, position: 'absolute', zIndex: -1, pointerEvents: 'none' }}
-      ></div>
+    <div className="notranslate custom-translate-wrapper" ref={dropdownRef} style={{ position: 'relative' }}>
+      {/* Hidden Native Element */}
+      <div id="google_translate_element" style={{ opacity: 0, position: 'absolute', zIndex: -1, pointerEvents: 'none' }}></div>
 
-      {/* Floating Action Button & Menu */}
-      <div 
-        ref={menuRef}
+      {/* Custom Button UI */}
+      <button 
+        onClick={() => setIsOpen(!isOpen)}
         style={{
-          position: 'fixed',
-          bottom: '24px',
-          right: '24px',
-          zIndex: 9999,
           display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'flex-end',
-          gap: '12px'
+          alignItems: 'center',
+          gap: '8px',
+          background: 'transparent',
+          border: 'none',
+          color: 'var(--text-color)',
+          cursor: 'pointer',
+          fontFamily: 'inherit',
+          fontSize: '0.95rem',
+          fontWeight: '500',
+          padding: 0
         }}
-        className="notranslate"
       >
-        {/* Popup Menu */}
-        {isOpen && (
-          <div style={{
-            backgroundColor: 'var(--card-bg)',
-            border: '1px solid var(--border-color)',
-            borderRadius: '16px',
-            padding: '8px',
-            boxShadow: 'var(--shadow-glass)',
-            backdropFilter: 'blur(16px)',
-            display: 'flex',
-            flexDirection: 'column',
-            minWidth: '140px',
-            animation: 'fadeInUp 0.3s ease'
-          }}>
-            <button 
-              onClick={() => changeLanguage('te')}
-              style={{
-                background: 'none', border: 'none', padding: '12px 16px', 
-                textAlign: 'left', cursor: 'pointer', color: 'var(--text-color)',
-                borderRadius: '8px', fontWeight: '500', transition: 'var(--transition)'
-              }}
-              className="lang-btn"
-            >
-              తెలుగు (Telugu)
-            </button>
-            <button 
-              onClick={() => changeLanguage('en')}
-              style={{
-                background: 'none', border: 'none', padding: '12px 16px', 
-                textAlign: 'left', cursor: 'pointer', color: 'var(--text-color)',
-                borderRadius: '8px', fontWeight: '500', transition: 'var(--transition)'
-              }}
-              className="lang-btn"
-            >
-              English
-            </button>
-          </div>
-        )}
+        <Languages size={18} className="translate-icon" />
+        <span>{currentLang}</span>
+        <ChevronDown size={16} style={{ color: 'var(--primary-color)' }} />
+      </button>
 
-        {/* Floating Button */}
-        <button
-          onClick={() => setIsOpen(!isOpen)}
-          style={{
-            backgroundColor: 'var(--primary-color)',
-            color: 'white',
-            border: 'none',
-            borderRadius: '50%',
-            width: '56px',
-            height: '56px',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            cursor: 'pointer',
-            boxShadow: '0 4px 14px rgba(79, 70, 229, 0.4)',
-            transition: 'transform 0.2s ease, box-shadow 0.2s ease',
-          }}
-          onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.05)'}
-          onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
-          aria-label="Translate Page"
-        >
-          {isOpen ? <X size={24} /> : <Globe size={24} />}
-        </button>
-      </div>
-    </>
+      {/* Custom Searchable Dropdown */}
+      {isOpen && (
+        <div className="custom-dropdown-menu">
+          <div className="search-bar-container">
+            <Search size={14} className="search-icon" />
+            <input 
+              type="text" 
+              placeholder="Search languages..." 
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="search-input"
+              autoFocus
+            />
+          </div>
+          <div className="language-list">
+            {filteredLanguages.length > 0 ? (
+              filteredLanguages.map(lang => (
+                <button
+                  key={lang.code}
+                  className="language-option"
+                  onClick={() => changeLanguage(lang.code, lang.name)}
+                >
+                  {lang.name}
+                </button>
+              ))
+            ) : (
+              <div className="no-results">No languages found</div>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
   );
 }

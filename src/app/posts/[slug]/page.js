@@ -5,6 +5,24 @@ import ShareButtons from './ShareButtons';
 import Comments from './Comments';
 import GoogleTranslate from '@/components/GoogleTranslate';
 
+function decodeHtmlEntities(text) {
+  if (!text) return '';
+  return text
+    .replace(/&#8230;/g, '…')
+    .replace(/&#8211;/g, '–')
+    .replace(/&#8212;/g, '—')
+    .replace(/&#8216;/g, '‘')
+    .replace(/&#8217;/g, '’')
+    .replace(/&#8220;/g, '“')
+    .replace(/&#8221;/g, '”')
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&#038;/g, '&')
+    .replace(/&#39;/g, "'");
+}
+
 export async function generateStaticParams() {
   const posts = await getAllPosts();
   return posts.map((post) => ({
@@ -21,8 +39,8 @@ export async function generateMetadata({ params }) {
   }
 
   // Clean HTML from excerpt and title
-  const cleanDescription = post.excerpt.rendered.replace(/<[^>]+>/g, '').trim() || 'మనసులోంచి వచ్చిన మాటలు';
-  const cleanTitle = post.title.rendered.replace(/<[^>]+>/g, '').trim();
+  const cleanDescription = decodeHtmlEntities(post.excerpt.rendered.replace(/<[^>]+>/g, '').trim()) || 'మనసులోంచి వచ్చిన మాటలు';
+  const cleanTitle = decodeHtmlEntities(post.title.rendered.replace(/<[^>]+>/g, '').trim());
   
   // Use featured image or a fallback for social cards
   const imageUrl = post._embedded && post._embedded['wp:featuredmedia'] 
@@ -72,8 +90,9 @@ export default async function Post({ params }) {
             className="post-title"
             dangerouslySetInnerHTML={{ __html: post.title.rendered }}
           />
-          <div className="post-meta">
+          <div className="post-meta" style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', width: '100%', position: 'relative', zIndex: 999 }}>
             <span>{new Date(post.date).toLocaleDateString()}</span>
+            <GoogleTranslate />
           </div>
         </header>
       </div>
@@ -103,11 +122,10 @@ export default async function Post({ params }) {
           </div>
         </div>
 
-        <GoogleTranslate />
 
         <Comments postId={post.id} />
 
-        <ShareButtons title={post.title.rendered} />
+        <ShareButtons title={decodeHtmlEntities(post.title.rendered)} />
       </div>
     </article>
   );
