@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import ShareButtons from './ShareButtons';
 import Comments from './Comments';
+import GoogleTranslate from '@/components/GoogleTranslate';
 
 export async function generateStaticParams() {
   const posts = await getAllPosts();
@@ -101,6 +102,8 @@ export default async function Post({ params }) {
             </Link>
           </div>
         </div>
+
+        <GoogleTranslate />
 
         <Comments postId={post.id} />
 
