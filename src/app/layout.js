@@ -4,6 +4,7 @@ import { Ramabhadra, Mandali } from "next/font/google";
 
 import { ThemeProvider } from '@/components/ThemeProvider';
 import ThemeToggle from '@/components/ThemeToggle';
+import PwaRegistry from "@/components/PwaRegistry";
 
 const ramabhadra = Ramabhadra({ 
   weight: "400", 
@@ -42,6 +43,7 @@ export default function RootLayout({ children }) {
     <html lang="en" className={`${ramabhadra.variable} ${mandali.variable}`} suppressHydrationWarning>
       <body suppressHydrationWarning>
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
+          <PwaRegistry />
           <div className="container">
             <header className="site-header">
               <Link href="/" className="logo">
