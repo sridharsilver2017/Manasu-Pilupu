@@ -30,8 +30,8 @@ export default function CopyUpi({ upiId }) {
       
       {/* QR Code Section */}
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: '32px' }}>
-        <div ref={qrRef} style={{ padding: '16px', backgroundColor: 'white', borderRadius: '12px', display: 'inline-block', boxShadow: 'var(--shadow-md)' }}>
-          <QRCodeCanvas value={upiUrl} size={180} level={"H"} />
+        <div ref={qrRef} style={{ padding: '4px', backgroundColor: 'white', borderRadius: '12px', display: 'inline-block', boxShadow: 'var(--shadow-md)' }}>
+          <QRCodeCanvas value={upiUrl} size={180} level={"H"} includeMargin={true} />
         </div>
         <button 
           onClick={handleDownloadQr}
@@ -39,7 +39,7 @@ export default function CopyUpi({ upiId }) {
             marginTop: '20px',
             padding: '10px 24px',
             backgroundColor: 'var(--primary-color)',
-            color: 'var(--bg-color)',
+            color: '#ffffff',
             border: 'none',
             borderRadius: 'var(--radius)',
             cursor: 'pointer',
@@ -62,7 +62,14 @@ export default function CopyUpi({ upiId }) {
       </div>
 
       <div style={{ margin: 0, fontWeight: 'bold', fontSize: '1.2rem', color: 'var(--primary-color)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px', flexWrap: 'wrap' }}>
-        <span>నా UPI ID: {upiId} (GPay / PhonePe / Paytm)</span>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px' }}>
+          <span>UPI ID: {upiId}</span>
+          <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+            <span style={{ fontSize: '0.85rem', padding: '4px 14px', backgroundColor: 'rgba(66, 133, 244, 0.15)', color: '#4285F4', borderRadius: '20px', fontWeight: 700, letterSpacing: '0.5px' }}>GPay</span>
+            <span style={{ fontSize: '0.85rem', padding: '4px 14px', backgroundColor: 'rgba(94, 92, 230, 0.15)', color: '#5E5CE6', borderRadius: '20px', fontWeight: 700, letterSpacing: '0.5px' }}>PhonePe</span>
+            <span style={{ fontSize: '0.85rem', padding: '4px 14px', backgroundColor: 'rgba(0, 186, 242, 0.15)', color: '#00BAF2', borderRadius: '20px', fontWeight: 700, letterSpacing: '0.5px' }}>Paytm</span>
+          </div>
+        </div>
         <button 
           onClick={handleCopy}
           style={{

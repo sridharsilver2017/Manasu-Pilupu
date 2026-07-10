@@ -18,7 +18,7 @@ export default function SupportPage() {
           <h1 className="post-title">ఈ అక్షరయానానికి మీ తోడు కావాలి</h1>
         </header>
 
-        <div className="post-content">
+        <div className="post-content support-content">
           <p>నమస్కారం!</p>
           
           <p>నా రచనలను చదువుతూ, ఈ పేజీ వరకు వచ్చినందుకు మీకు హృదయపూర్వక ధన్యవాదాలు.</p>

@@ -445,6 +445,10 @@ h1 b, h2 b, h3 b, h4 b, h5 b, h6 b,
   letter-spacing: -0.01em;
 }
 
+.support-content p {
+  margin-bottom: 16px;
+}
+
 .post-content h1, .post-content h2, .post-content h3, .post-content h4, .post-content h5, .post-content h6 {
   margin-top: 40px;
   margin-bottom: 16px;
