@@ -43,7 +43,7 @@ export default function SupportPage() {
 
           <h3>యూపీఐ ద్వారా సహాయం చేయండి</h3>
 
-          <CopyUpi upiId="9951979988@upi" />
+          <CopyUpi upiId="silver1@ptaxis" />
 
           <p>అలాగే, నా వ్యాసాలను మీ కుటుంబ సభ్యులతో, మిత్రులతో పంచుకోవడం కూడా నాకు మీరు చేసే గొప్ప సహాయమే.</p>
 
