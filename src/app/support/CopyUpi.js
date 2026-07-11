@@ -61,43 +61,61 @@ export default function CopyUpi({ upiId }) {
         </button>
       </div>
 
-      <div style={{ margin: 0, fontWeight: 'bold', fontSize: '1.2rem', color: 'var(--primary-color)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px', flexWrap: 'wrap' }}>
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px' }}>
+      <div style={{ margin: 0, fontWeight: 'bold', fontSize: '1.2rem', color: 'var(--primary-color)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           <span>UPI ID: {upiId}</span>
-          <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-            <span style={{ fontSize: '0.85rem', padding: '4px 14px', backgroundColor: 'rgba(66, 133, 244, 0.15)', color: '#4285F4', borderRadius: '20px', fontWeight: 700, letterSpacing: '0.5px' }}>GPay</span>
-            <span style={{ fontSize: '0.85rem', padding: '4px 14px', backgroundColor: 'rgba(94, 92, 230, 0.15)', color: '#5E5CE6', borderRadius: '20px', fontWeight: 700, letterSpacing: '0.5px' }}>PhonePe</span>
-            <span style={{ fontSize: '0.85rem', padding: '4px 14px', backgroundColor: 'rgba(0, 186, 242, 0.15)', color: '#00BAF2', borderRadius: '20px', fontWeight: 700, letterSpacing: '0.5px' }}>Paytm</span>
+          <button 
+            onClick={handleCopy}
+            style={{
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              padding: '8px',
+              borderRadius: '8px',
+              backgroundColor: copied ? '#e6f4ea' : 'var(--border-color)',
+              color: copied ? '#137333' : 'var(--text-color)',
+              transition: 'all 0.2s ease'
+            }}
+            title="Copy UPI ID"
+          >
+            {copied ? (
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+            ) : (
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+              </svg>
+            )}
+          </button>
+        </div>
+        
+        <div style={{ display: 'flex', gap: '12px', alignItems: 'center', justifyContent: 'center', flexWrap: 'wrap' }}>
+          {/* GPay */}
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '6px 16px', backgroundColor: '#ffffff', border: '1px solid #dadce0', borderRadius: '20px', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
+            <span style={{ fontSize: '15px', fontWeight: 600, fontFamily: 'Product Sans, sans-serif' }}>
+              <span style={{ color: '#4285F4' }}>G</span>
+              <span style={{ color: '#5F6368', marginLeft: '4px' }}>Pay</span>
+            </span>
+          </div>
+          {/* PhonePe */}
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '6px 16px', backgroundColor: '#5E5CE6', border: '1px solid #5E5CE6', borderRadius: '20px', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
+            <span style={{ fontSize: '15px', fontWeight: 800, color: '#ffffff', letterSpacing: '-0.5px' }}>
+              PhonePe
+            </span>
+          </div>
+          {/* Paytm */}
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '6px 16px', backgroundColor: '#ffffff', border: '1px solid #00BAF2', borderRadius: '20px', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
+            <span style={{ fontSize: '16px', fontWeight: 800, letterSpacing: '-0.5px' }}>
+              <span style={{ color: '#002970' }}>Pay</span>
+              <span style={{ color: '#00BAF2' }}>tm</span>
+            </span>
           </div>
         </div>
-        <button 
-          onClick={handleCopy}
-          style={{
-            background: 'none',
-            border: 'none',
-            cursor: 'pointer',
-            display: 'inline-flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            padding: '8px',
-            borderRadius: '8px',
-            backgroundColor: copied ? '#e6f4ea' : 'var(--border-color)',
-            color: copied ? '#137333' : 'var(--text-color)',
-            transition: 'all 0.2s ease'
-          }}
-          title="Copy UPI ID"
-        >
-          {copied ? (
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <polyline points="20 6 9 17 4 12"></polyline>
-            </svg>
-          ) : (
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-            </svg>
-          )}
-        </button>
       </div>
       {copied && <span style={{ fontSize: '0.9rem', color: '#137333', marginTop: '12px', display: 'block', fontWeight: 500 }}>Copied to clipboard!</span>}
     </div>

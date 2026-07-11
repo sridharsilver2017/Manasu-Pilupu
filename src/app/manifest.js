@@ -7,8 +7,8 @@ export default function manifest() {
     description: 'Words from the Heart - A Telugu Blog',
     start_url: '/',
     display: 'standalone',
-    background_color: '#0f172a',
-    theme_color: '#4f46e5',
+    background_color: 'transparent',
+    theme_color: 'transparent',
     icons: [
       {
         src: '/icon-192x192.png',
