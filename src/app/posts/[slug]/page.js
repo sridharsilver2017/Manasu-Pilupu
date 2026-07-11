@@ -39,7 +39,14 @@ export async function generateMetadata({ params }) {
   }
 
   // Clean HTML from excerpt and title
-  const cleanDescription = decodeHtmlEntities(post.excerpt.rendered.replace(/<[^>]+>/g, '').trim()) || 'మనసులోంచి వచ్చిన మాటలు';
+  let cleanDescription = decodeHtmlEntities(post.excerpt.rendered.replace(/<[^>]+>/g, '').trim());
+  
+  // Truncate description for SEO (ideal length is around 150-160 characters)
+  if (cleanDescription.length > 160) {
+    cleanDescription = cleanDescription.substring(0, 157) + '...';
+  }
+  cleanDescription = cleanDescription || 'మనసులోంచి వచ్చిన మాటలు';
+
   const cleanTitle = decodeHtmlEntities(post.title.rendered.replace(/<[^>]+>/g, '').trim());
   
   // Use featured image or a fallback for social cards
@@ -47,12 +54,15 @@ export async function generateMetadata({ params }) {
     ? post._embedded['wp:featuredmedia'][0].source_url 
     : 'https://dev-sridhar-silver.pantheonsite.io/wp-content/uploads/2026/07/suryudu-chustunnadu.png';
 
+  const siteName = 'మనసు పిలుపు';
+
   return {
     title: cleanTitle,
     description: cleanDescription,
     openGraph: {
       title: cleanTitle,
       description: cleanDescription,
+      siteName: siteName,
       type: 'article',
       publishedTime: post.date,
       images: [
@@ -78,6 +88,12 @@ export default async function Post({ params }) {
     notFound();
   }
 
+  const allPosts = await getAllPosts();
+  const currentPostIndex = allPosts.findIndex((p) => p.slug === slug);
+  
+  const prevPost = currentPostIndex < allPosts.length - 1 ? allPosts[currentPostIndex + 1] : null;
+  const nextPost = currentPostIndex > 0 ? allPosts[currentPostIndex - 1] : null;
+
   return (
     <article className="single-post animate-fade-in">
       <div className="post-container">
@@ -99,7 +115,7 @@ export default async function Post({ params }) {
 
       {post._embedded && post._embedded['wp:featuredmedia'] && (
         <img
-          src={post._embedded['wp:featuredmedia'][0].source_url}
+          src={`${post._embedded['wp:featuredmedia'][0].source_url}?t=${new Date(post.modified || post.date).getTime()}`}
           alt={post.title.rendered}
           className="post-featured-image"
         />
@@ -121,6 +137,29 @@ export default async function Post({ params }) {
             </Link>
           </div>
         </div>
+
+        {(prevPost || nextPost) && (
+          (() => {
+            const truncate = (text, len = 25) => {
+              const decoded = decodeHtmlEntities(text);
+              return decoded.length > len ? decoded.substring(0, len) + '...' : decoded;
+            };
+            return (
+              <div className="post-navigation">
+                {prevPost ? (
+                  <Link href={`/posts/${prevPost.slug}`} className="nav-prev">
+                    &larr; Prev: {truncate(prevPost.title.rendered, 20)}
+                  </Link>
+                ) : <div className="nav-prev"></div>}
+                {nextPost ? (
+                  <Link href={`/posts/${nextPost.slug}`} className="nav-next">
+                    Next: {truncate(nextPost.title.rendered, 20)} &rarr;
+                  </Link>
+                ) : <div className="nav-next"></div>}
+              </div>
+            );
+          })()
+        )}
 
 
         <Comments postId={post.id} />

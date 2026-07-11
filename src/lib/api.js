@@ -1,7 +1,7 @@
 const API_URL = 'https://dev-sridhar-silver.pantheonsite.io/wp-json/wp/v2';
 
 export async function getAllPosts() {
-  const res = await fetch(`${API_URL}/posts?per_page=100&_embed`, { next: { revalidate: 60 } });
+  const res = await fetch(`${API_URL}/posts?per_page=100&_embed&_t=${Date.now()}`);
   if (!res.ok) {
     throw new Error('Failed to fetch posts');
   }
@@ -9,7 +9,7 @@ export async function getAllPosts() {
 }
 
 export async function getPaginatedPosts(page = 1, perPage = 9) {
-  const res = await fetch(`${API_URL}/posts?per_page=${perPage}&page=${page}&_embed`, { next: { revalidate: 60 } });
+  const res = await fetch(`${API_URL}/posts?per_page=${perPage}&page=${page}&_embed&_t=${Date.now()}`);
   if (!res.ok) {
     throw new Error('Failed to fetch posts');
   }
@@ -21,7 +21,7 @@ export async function getPaginatedPosts(page = 1, perPage = 9) {
 }
 
 export async function getPostBySlug(slug) {
-  const res = await fetch(`${API_URL}/posts?slug=${slug}&_embed`, { next: { revalidate: 60 } });
+  const res = await fetch(`${API_URL}/posts?slug=${slug}&_embed&_t=${Date.now()}`);
   if (!res.ok) {
     throw new Error('Failed to fetch post');
   }
@@ -30,7 +30,7 @@ export async function getPostBySlug(slug) {
 }
 
 export async function getCommentsByPostId(postId) {
-  const res = await fetch(`${API_URL}/comments?post=${postId}&order=asc`, { next: { revalidate: 60 } });
+  const res = await fetch(`${API_URL}/comments?post=${postId}&order=asc&_t=${Date.now()}`);
   if (!res.ok) {
     return [];
   }

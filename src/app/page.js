@@ -33,7 +33,7 @@ export default async function Home() {
                 <div className="post-card-image-wrapper">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
-                    src={post._embedded['wp:featuredmedia'][0].source_url}
+                    src={`${post._embedded['wp:featuredmedia'][0].source_url}?t=${new Date(post.modified || post.date).getTime()}`}
                     alt={post.title.rendered}
                     className="post-card-image"
                   />
