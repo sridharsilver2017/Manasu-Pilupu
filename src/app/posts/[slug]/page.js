@@ -127,6 +127,15 @@ export default async function Post({ params }) {
           dangerouslySetInnerHTML={{ __html: post.content.rendered }}
         />
         
+        <div className="ai-note" style={{ fontSize: '0.85rem', color: 'var(--text-secondary, #666)', marginTop: '2rem', padding: '1rem', backgroundColor: 'var(--bg-secondary, rgba(0,0,0,0.03))', borderRadius: '8px', borderLeft: '4px solid var(--accent-color, #0070f3)' }}>
+          <p style={{ margin: '0 0 0.5rem 0', fontWeight: 'bold' }}>గమనిక:</p>
+          <p style={{ margin: 0, lineHeight: '1.6' }}>
+            AI నా రచయిత కాదు… నా వేగవంతమైన అసిస్టెంట్ మాత్రమే.<br/>
+            ఆలోచన నాది. భావం నాది. చివరికి ఎడిట్ నాది.<br/>
+            మిషన్ని ట్రైన్ చేసింది నేనే… అందుకే అది నా స్టైల్లో మాట్లాడుతోంది. 😄
+          </p>
+        </div>
+
         <div className="support-message">
           <p>
             ఈ బ్లాగ్‌లోని రచనలు మీకు నచ్చినట్లయితే, ఈ స్వచ్ఛమైన ప్రయాణం ఇలాగే ముందుకు సాగడానికి మీ వంతు మద్దతు అందించండి.
