@@ -25,12 +25,6 @@ function decodeHtmlEntities(text) {
     .replace(/&#39;/g, "'");
 }
 
-export async function generateStaticParams() {
-  const posts = await getAllPosts();
-  return posts.map((post) => ({
-    slug: post.slug,
-  }));
-}
 
 export async function generateMetadata({ params }) {
   const { slug } = await params;
