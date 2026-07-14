@@ -63,7 +63,7 @@ export default function RootLayout({ children }) {
             <main className="animate-fade-in">{children}</main>
             <footer className="site-footer">
               <p>&copy; {new Date().getFullYear()} మనసు పిలుపు. All rights reserved.</p>
-              <p className="footer-credits" style={{ marginTop: '10px', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+              <p className="footer-credits" style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
                 Designed by <a href="https://advaitadesigns.com/" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--primary-color)', textDecoration: 'none', fontWeight: 'bold' }}>Advaita Designs</a>
               </p>
             </footer>

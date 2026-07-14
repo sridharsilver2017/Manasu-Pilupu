@@ -975,12 +975,24 @@ h1 b, h2 b, h3 b, h4 b, h5 b, h6 b,
   padding-top: 32px;
   padding-bottom: 32px;
   border-top: 1px solid var(--border-color);
-  text-align: center;
   color: var(--text-muted);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  text-align: center;
+}
+
+@media (min-width: 768px) {
+  .site-footer {
+    flex-direction: row;
+    justify-content: space-between;
+    text-align: left;
+  }
 }
 
 .site-footer p {
-  margin-bottom: 8px;
+  margin-bottom: 0;
   font-size: 0.95rem;
 }
 
