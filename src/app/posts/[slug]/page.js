@@ -1,3 +1,5 @@
+export const runtime = 'edge';
+
 import { getAllPosts, getPostBySlug } from '@/lib/api';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
