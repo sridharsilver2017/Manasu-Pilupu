@@ -130,9 +130,9 @@ export default async function Post({ params }) {
         <div className="ai-note" style={{ fontSize: '0.85rem', color: 'var(--text-secondary, #666)', marginTop: '2rem', padding: '1rem', backgroundColor: 'var(--bg-secondary, rgba(0,0,0,0.03))', borderRadius: '8px', borderLeft: '4px solid var(--accent-color, #0070f3)' }}>
           <p style={{ margin: '0 0 0.5rem 0', fontWeight: 'bold' }}>గమనిక:</p>
           <p style={{ margin: 0, lineHeight: '1.6' }}>
-            AI నా రచయిత కాదు… నా వేగవంతమైన అసిస్టెంట్ మాత్రమే.<br/>
-            ఆలోచన నాది. భావం నాది. చివరికి ఎడిట్ నాది.<br/>
-            మిషన్ని ట్రైన్ చేసింది నేనే… అందుకే అది నా స్టైల్లో మాట్లాడుతోంది. 😄
+            AI నా రచయిత కాదు… నా వేగాన్ని పెంచే సహాయకుడు మాత్రమే.<br/>
+            ఆలోచన నాది. భావం నాది. చివరకు సరిదిద్దుకునేదీ (ఎడిట్ చేసేదీ) నేనే.<br/>
+            ఈ మిషన్కి నేనే స్వయంగా శిక్షణ ఇచ్చాను… అందుకే ఇది నా శైలిలోనే మాట్లాడుతోంది. 😄
           </p>
         </div>
 
