@@ -1,7 +1,8 @@
 const API_URL = 'https://dev-sridhar-silver.pantheonsite.io/wp-json/wp/v2';
+const BUILD_TIMESTAMP = Date.now();
 
 export async function getAllPosts() {
-  const res = await fetch(`${API_URL}/posts?per_page=100&_embed=1`, { cache: 'force-cache' });
+  const res = await fetch(`${API_URL}/posts?per_page=100&_embed=1&_t=${BUILD_TIMESTAMP}`, { cache: 'force-cache' });
   if (!res.ok) {
     throw new Error('Failed to fetch posts');
   }
@@ -9,7 +10,7 @@ export async function getAllPosts() {
 }
 
 export async function getPaginatedPosts(page = 1, perPage = 9) {
-  const res = await fetch(`${API_URL}/posts?per_page=${perPage}&page=${page}&_embed=1`, { cache: 'force-cache' });
+  const res = await fetch(`${API_URL}/posts?per_page=${perPage}&page=${page}&_embed=1&_t=${BUILD_TIMESTAMP}`, { cache: 'force-cache' });
   if (!res.ok) {
     throw new Error('Failed to fetch posts');
   }
@@ -21,7 +22,7 @@ export async function getPaginatedPosts(page = 1, perPage = 9) {
 }
 
 export async function getPostBySlug(slug) {
-  const res = await fetch(`${API_URL}/posts?slug=${slug}&_embed=1`, { cache: 'force-cache' });
+  const res = await fetch(`${API_URL}/posts?slug=${slug}&_embed=1&_t=${BUILD_TIMESTAMP}`, { cache: 'force-cache' });
   if (!res.ok) {
     throw new Error('Failed to fetch post');
   }
@@ -30,7 +31,7 @@ export async function getPostBySlug(slug) {
 }
 
 export async function getCommentsByPostId(postId) {
-  const res = await fetch(`${API_URL}/comments?post=${postId}&order=asc`, { cache: 'force-cache' });
+  const res = await fetch(`${API_URL}/comments?post=${postId}&order=asc&_t=${BUILD_TIMESTAMP}`, { cache: 'force-cache' });
   if (!res.ok) {
     return [];
   }
