@@ -19,7 +19,7 @@ const mandali = Mandali({
 });
 
 export const metadata = {
-  metadataBase: new URL('https://dev-sridhar-silver.pantheonsite.io'),
+  metadataBase: new URL('https://manasupilupu.pages.dev'),
   title: {
     default: "మనసు పిలుపు | మనసులోంచి వచ్చిన మాటలు",
     template: "%s | మనసు పిలుపు"
