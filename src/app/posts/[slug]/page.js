@@ -49,10 +49,12 @@ export async function generateMetadata({ params }) {
 
   const cleanTitle = decodeHtmlEntities(post.title.rendered.replace(/<[^>]+>/g, '').trim());
   
-  // Use featured image or a fallback for social cards
-  const imageUrl = post._embedded && post._embedded['wp:featuredmedia'] 
+  let rawImageUrl = post._embedded && post._embedded['wp:featuredmedia'] 
     ? post._embedded['wp:featuredmedia'][0].source_url 
     : 'https://dev-sridhar-silver.pantheonsite.io/wp-content/uploads/2026/07/suryudu-chustunnadu.png';
+
+  // Bypass Pantheon's noindex block using wsrv.nl proxy so Facebook can scrape it
+  const imageUrl = `https://wsrv.nl/?url=${encodeURIComponent(rawImageUrl)}`;
 
   const siteName = 'మనసు పిలుపు';
 
