@@ -875,6 +875,9 @@ h1 b, h2 b, h3 b, h4 b, h5 b, h6 b,
   border: none;
   font-family: inherit;
   flex: 0 0 auto;
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
 }
 
 @media (min-width: 768px) {
