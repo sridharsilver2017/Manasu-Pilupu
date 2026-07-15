@@ -46,7 +46,7 @@ export default function RootLayout({ children }) {
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
           <PwaRegistry />
           <div className="container">
-            <header className="site-header hide-on-mobile">
+            <header className="site-header">
               <Link href="/" className="logo" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                 <span className="logo-text">మనసు పిలుపు</span>
               </Link>
