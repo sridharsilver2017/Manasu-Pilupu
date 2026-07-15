@@ -48,7 +48,6 @@ export default function RootLayout({ children }) {
           <div className="container">
             <header className="site-header">
               <Link href="/" className="logo" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <img src="/icon.png" alt="మనసు పిలుపు Logo" width={32} height={32} style={{ borderRadius: '50%', objectFit: 'cover' }} />
                 <span className="logo-text">మనసు పిలుపు</span>
               </Link>
               <nav className="site-nav hide-on-mobile">
