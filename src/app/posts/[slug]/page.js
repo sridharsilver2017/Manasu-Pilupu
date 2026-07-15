@@ -64,12 +64,19 @@ export async function generateMetadata({ params }) {
       description: cleanDescription,
       siteName: siteName,
       type: 'article',
+      url: `/posts/${slug}`,
       publishedTime: post.date,
       images: [
         {
           url: imageUrl,
+          width: 1200,
+          height: 630,
+          alt: cleanTitle,
         },
       ],
+    },
+    alternates: {
+      canonical: `/posts/${slug}`,
     },
     twitter: {
       card: 'summary_large_image',
