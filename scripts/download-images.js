@@ -47,7 +47,7 @@ async function fetchAllPosts() {
   let totalPages = 1;
 
   while (page <= totalPages) {
-    const res = await fetch(`${API_URL}/posts?per_page=100&page=${page}&_embed=1`);
+    const res = await fetch(`${API_URL}/posts?per_page=100&page=${page}&_embed=1&_t=${Date.now()}`);
     if (!res.ok) break;
     
     if (page === 1) {
