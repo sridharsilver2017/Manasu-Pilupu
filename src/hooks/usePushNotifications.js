@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { Capacitor } from '@capacitor/core';
 import { PushNotifications } from '@capacitor/push-notifications';
+import { FCM } from '@capacitor-community/fcm';
 
 export const usePushNotifications = () => {
   const [fcmToken, setFcmToken] = useState(null);
@@ -32,7 +33,11 @@ export const usePushNotifications = () => {
       await PushNotifications.addListener('registration', token => {
         console.log('Push registration success, token: ' + token.value);
         setFcmToken(token.value);
-        // TODO: Send this token to your server if you want to target this specific device later
+        
+        // Subscribe to FCM topic
+        FCM.subscribeTo({ topic: "all" })
+          .then(() => console.log('Subscribed to topic: all'))
+          .catch((err) => console.log('Error subscribing to topic', err));
       });
 
       await PushNotifications.addListener('registrationError', err => {
