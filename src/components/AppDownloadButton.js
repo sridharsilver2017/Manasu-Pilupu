@@ -1,13 +1,14 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Capacitor } from '@capacitor/core';
 
 export default function AppDownloadButton({ style = {} }) {
-  const [isNative, setIsNative] = useState(true); // Default to true to prevent flash on native
+  const [isNative, setIsNative] = useState(false); // Default to false so it renders on web by default
 
   useEffect(() => {
-    setIsNative(Capacitor.isNativePlatform());
+    if (typeof window !== 'undefined' && window.Capacitor && window.Capacitor.isNativePlatform()) {
+      setIsNative(true);
+    }
   }, []);
 
   if (isNative) {
