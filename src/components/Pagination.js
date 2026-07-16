@@ -1,6 +1,6 @@
 import Link from 'next/link';
 
-export default function Pagination({ currentPage, totalPages }) {
+export default function Pagination({ currentPage, totalPages, basePath = '' }) {
   // Don't render pagination if there's only 1 page
   if (totalPages <= 1) {
     return null;
@@ -14,7 +14,7 @@ export default function Pagination({ currentPage, totalPages }) {
       {isFirstPage ? (
         <span className="pagination-btn disabled">&larr; క్రితం</span>
       ) : (
-        <Link href={currentPage - 1 === 1 ? '/' : `/page/${currentPage - 1}`} className="pagination-btn">
+        <Link href={currentPage - 1 === 1 ? (basePath || '/') : `${basePath}/page/${currentPage - 1}`} className="pagination-btn">
           &larr; క్రితం
         </Link>
       )}
@@ -26,7 +26,7 @@ export default function Pagination({ currentPage, totalPages }) {
       {isLastPage ? (
         <span className="pagination-btn disabled">తరువాత &rarr;</span>
       ) : (
-        <Link href={`/page/${currentPage + 1}`} className="pagination-btn">
+        <Link href={`${basePath}/page/${currentPage + 1}`} className="pagination-btn">
           తరువాత &rarr;
         </Link>
       )}

@@ -12,7 +12,8 @@ export async function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }) {
-  const category = await getCategoryBySlug(params.slug);
+  const resolvedParams = await params;
+  const category = await getCategoryBySlug(resolvedParams.slug);
   if (!category) return {};
 
   return {
@@ -22,7 +23,8 @@ export async function generateMetadata({ params }) {
 }
 
 export default async function CategoryPage({ params }) {
-  const category = await getCategoryBySlug(params.slug);
+  const resolvedParams = await params;
+  const category = await getCategoryBySlug(resolvedParams.slug);
   
   if (!category) {
     notFound();
