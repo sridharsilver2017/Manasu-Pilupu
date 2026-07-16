@@ -18,24 +18,6 @@ export default function PostCard({ post }) {
               className="post-card-image"
             />
           </Link>
-          {categories.length > 0 && (
-            <div className="post-card-categories" style={{ position: 'absolute', bottom: '12px', right: '12px', zIndex: 10, display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
-              {categories.map(cat => (
-                <Link href={`/category/${cat.slug}`} key={cat.id} style={{ fontSize: '0.7rem', backgroundColor: 'rgba(0, 20, 80, 0.85)', color: 'white', padding: '4px 10px', borderRadius: '20px', fontWeight: 'bold', textDecoration: 'none', boxShadow: '0 2px 4px rgba(0,0,0,0.3)', backdropFilter: 'blur(4px)' }}>
-                  {cat.name}
-                </Link>
-              ))}
-            </div>
-          )}
-        </div>
-      )}
-      {!post._embedded?.['wp:featuredmedia'] && categories.length > 0 && (
-        <div className="post-card-categories" style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', padding: '15px 15px 0' }}>
-          {categories.map(cat => (
-            <Link href={`/category/${cat.slug}`} key={cat.id} style={{ fontSize: '0.7rem', backgroundColor: 'rgba(0, 20, 80, 0.85)', color: 'white', padding: '4px 10px', borderRadius: '20px', fontWeight: 'bold', textDecoration: 'none' }}>
-              {cat.name}
-            </Link>
-          ))}
         </div>
       )}
       <div className="post-card-content">
@@ -50,7 +32,13 @@ export default function PostCard({ post }) {
           dangerouslySetInnerHTML={{ __html: post.excerpt.rendered }}
         />
         <div className="post-card-meta">
-          <span>{new Date(post.date).toLocaleDateString()}</span>
+          <div className="post-card-categories" style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+            {categories.map(cat => (
+              <Link href={`/category/${cat.slug}`} key={cat.id} style={{ fontSize: '0.7rem', backgroundColor: 'rgba(0, 20, 80, 0.85)', color: 'white', padding: '4px 10px', borderRadius: '20px', fontWeight: 'bold', textDecoration: 'none' }}>
+                {cat.name}
+              </Link>
+            ))}
+          </div>
           <Link href={`/posts/${post.slug}`} className="read-more-link" style={{ textDecoration: 'none' }}>
             మరింత చదవండి <span className="arrow">&rarr;</span>
           </Link>
