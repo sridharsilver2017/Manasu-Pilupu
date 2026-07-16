@@ -54,6 +54,9 @@ export default function RootLayout({ children }) {
               </Link>
               <nav className="site-nav hide-on-mobile">
                 <ThemeToggle />
+                <Link href="/" className="nav-link">
+                  హోమ్
+                </Link>
                 <Link href="/blog" className="nav-link">
                   బ్లాగ్
                 </Link>
