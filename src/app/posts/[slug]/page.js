@@ -121,7 +121,7 @@ export default async function Post({ params }) {
             return categories.length > 0 ? (
               <div className="post-categories" style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '15px', justifyContent: 'center' }}>
                 {categories.map(cat => (
-                  <Link href={`/category/${cat.slug}`} key={cat.id} style={{ fontSize: '0.85rem', backgroundColor: 'var(--primary-color)', color: 'white', padding: '4px 12px', borderRadius: '15px', fontWeight: 'bold', textDecoration: 'none' }}>
+                  <Link href={`/category/${cat.slug}`} key={cat.id} style={{ fontSize: '0.85rem', backgroundColor: 'rgba(0, 20, 80, 0.85)', color: 'white', padding: '4px 12px', borderRadius: '15px', fontWeight: 'bold', textDecoration: 'none' }}>
                     {cat.name}
                   </Link>
                 ))}
