@@ -9,19 +9,30 @@ export default function PostCard({ post }) {
   return (
     <div className="post-card" style={{ position: 'relative' }}>
       {post._embedded && post._embedded['wp:featuredmedia'] && (
-        <Link href={`/posts/${post.slug}`} className="post-card-image-wrapper">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={`${post._embedded['wp:featuredmedia'][0].source_url}?t=${new Date(post.modified || post.date).getTime()}`}
-            alt={post.title.rendered}
-            className="post-card-image"
-          />
-        </Link>
+        <div className="post-card-image-wrapper" style={{ position: 'relative' }}>
+          <Link href={`/posts/${post.slug}`} style={{ display: 'block', width: '100%', height: '100%' }}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={`${post._embedded['wp:featuredmedia'][0].source_url}?t=${new Date(post.modified || post.date).getTime()}`}
+              alt={post.title.rendered}
+              className="post-card-image"
+            />
+          </Link>
+          {categories.length > 0 && (
+            <div className="post-card-categories" style={{ position: 'absolute', bottom: '12px', right: '12px', zIndex: 10, display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+              {categories.map(cat => (
+                <Link href={`/category/${cat.slug}`} key={cat.id} style={{ fontSize: '0.7rem', backgroundColor: 'rgba(0, 20, 80, 0.85)', color: 'white', padding: '4px 10px', borderRadius: '20px', fontWeight: 'bold', textDecoration: 'none', boxShadow: '0 2px 4px rgba(0,0,0,0.3)', backdropFilter: 'blur(4px)' }}>
+                  {cat.name}
+                </Link>
+              ))}
+            </div>
+          )}
+        </div>
       )}
-      {categories.length > 0 && (
-        <div className="post-card-categories" style={{ position: 'absolute', top: '12px', left: '12px', zIndex: 10, display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+      {!post._embedded?.['wp:featuredmedia'] && categories.length > 0 && (
+        <div className="post-card-categories" style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', padding: '15px 15px 0' }}>
           {categories.map(cat => (
-            <Link href={`/category/${cat.slug}`} key={cat.id} style={{ fontSize: '0.7rem', backgroundColor: 'rgba(0, 20, 80, 0.85)', color: 'white', padding: '4px 10px', borderRadius: '20px', fontWeight: 'bold', textDecoration: 'none', boxShadow: '0 2px 4px rgba(0,0,0,0.3)', backdropFilter: 'blur(4px)' }}>
+            <Link href={`/category/${cat.slug}`} key={cat.id} style={{ fontSize: '0.7rem', backgroundColor: 'rgba(0, 20, 80, 0.85)', color: 'white', padding: '4px 10px', borderRadius: '20px', fontWeight: 'bold', textDecoration: 'none' }}>
               {cat.name}
             </Link>
           ))}
