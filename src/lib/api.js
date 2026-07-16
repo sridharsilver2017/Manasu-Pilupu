@@ -75,3 +75,32 @@ export async function getCommentsByPostId(postId) {
   }
   return res.json();
 }
+
+export async function getAllCategories() {
+  const res = await fetch(`${API_URL}/categories?per_page=100&_t=${BUILD_TIMESTAMP}`, { cache: cacheStrategy });
+  if (!res.ok) {
+    throw new Error('Failed to fetch categories');
+  }
+  return res.json();
+}
+
+export async function getCategoryBySlug(slug) {
+  const res = await fetch(`${API_URL}/categories?slug=${slug}&_t=${BUILD_TIMESTAMP}`, { cache: cacheStrategy });
+  if (!res.ok) {
+    throw new Error('Failed to fetch category');
+  }
+  const categories = await res.json();
+  return categories.length > 0 ? categories[0] : null;
+}
+
+export async function getPostsByCategory(categoryId, page = 1, perPage = 9) {
+  const res = await fetch(`${API_URL}/posts?categories=${categoryId}&per_page=${perPage}&page=${page}&_embed=1&_t=${BUILD_TIMESTAMP}`, { cache: cacheStrategy });
+  if (!res.ok) {
+    throw new Error('Failed to fetch posts for category');
+  }
+  
+  const totalPages = parseInt(res.headers.get('x-wp-totalpages') || '1', 10);
+  const posts = await res.json();
+  
+  return { posts: posts.map(rewriteImageUrls), totalPages };
+}

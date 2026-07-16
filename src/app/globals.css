@@ -1142,3 +1142,6 @@ h1 b, h2 b, h3 b, h4 b, h5 b, h6 b,
   box-shadow: 0 6px 15px rgba(79, 70, 229, 0.4);
   color: #ffffff;
 }
+
+.category-card { transition: transform 0.2s ease, box-shadow 0.2s ease; }
+.category-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.1); }

@@ -1,11 +1,12 @@
-import Image from "next/image";
 import Link from 'next/link';
 import { getPaginatedPosts } from '@/lib/api';
-import Pagination from '@/components/Pagination';
 import AppDownloadButton from '@/components/AppDownloadButton';
+import Pagination from '@/components/Pagination';
+import PostCard from '@/components/PostCard';
+
 export default async function Home() {
   const currentPage = 1;
-  const { posts, totalPages } = await getPaginatedPosts(currentPage, 9);
+  const { posts } = await getPaginatedPosts(currentPage, 6);
 
   return (
     <div className="home-wrapper">
@@ -29,38 +30,15 @@ export default async function Home() {
 
         <div className="posts-grid">
           {posts.map((post) => (
-            <Link href={`/posts/${post.slug}`} key={post.id} className="post-card">
-              {post._embedded && post._embedded['wp:featuredmedia'] && (
-                <div className="post-card-image-wrapper">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={`${post._embedded['wp:featuredmedia'][0].source_url}?t=${new Date(post.modified || post.date).getTime()}`}
-                    alt={post.title.rendered}
-                    className="post-card-image"
-                  />
-                </div>
-              )}
-              <div className="post-card-content">
-                <h2
-                  className="post-card-title"
-                  dangerouslySetInnerHTML={{ __html: post.title.rendered }}
-                />
-                <div
-                  className="post-card-excerpt"
-                  dangerouslySetInnerHTML={{ __html: post.excerpt.rendered }}
-                />
-                <div className="post-card-meta">
-                  <span>{new Date(post.date).toLocaleDateString()}</span>
-                  <span className="read-more-link">
-                    మరింత చదవండి <span className="arrow">&rarr;</span>
-                  </span>
-                </div>
-              </div>
-            </Link>
+            <PostCard key={post.id} post={post} />
           ))}
         </div>
         
-        <Pagination currentPage={currentPage} totalPages={totalPages} />
+        <div style={{ textAlign: 'center', marginTop: '40px' }}>
+          <Link href="/blog" className="btn-primary" style={{ padding: '10px 24px', borderRadius: '30px', display: 'inline-block', textDecoration: 'none', fontWeight: 'bold' }}>
+            అన్ని వ్యాసాలు చదవండి &rarr;
+          </Link>
+        </div>
       </section>
     </div>
   );

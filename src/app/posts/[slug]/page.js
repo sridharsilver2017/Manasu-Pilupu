@@ -113,6 +113,21 @@ export default async function Post({ params }) {
             className="post-title"
             dangerouslySetInnerHTML={{ __html: post.title.rendered }}
           />
+          {(() => {
+            const categories = post._embedded && post._embedded['wp:term'] && post._embedded['wp:term'][0]
+              ? post._embedded['wp:term'][0].filter(term => term.taxonomy === 'category')
+              : [];
+            
+            return categories.length > 0 ? (
+              <div className="post-categories" style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '15px', justifyContent: 'center' }}>
+                {categories.map(cat => (
+                  <Link href={`/category/${cat.slug}`} key={cat.id} style={{ fontSize: '0.85rem', backgroundColor: 'var(--primary-color)', color: 'white', padding: '4px 12px', borderRadius: '15px', fontWeight: 'bold', textDecoration: 'none' }}>
+                    {cat.name}
+                  </Link>
+                ))}
+              </div>
+            ) : null;
+          })()}
           <div className="post-meta" style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', width: '100%', position: 'relative', zIndex: 999 }}>
             <span>{new Date(post.date).toLocaleDateString()}</span>
             <GoogleTranslate />

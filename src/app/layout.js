@@ -54,6 +54,12 @@ export default function RootLayout({ children }) {
               </Link>
               <nav className="site-nav hide-on-mobile">
                 <ThemeToggle />
+                <Link href="/blog" className="nav-link">
+                  బ్లాగ్
+                </Link>
+                <Link href="/categories" className="nav-link">
+                  విభాగాలు
+                </Link>
                 <Link href="/contact" className="nav-link">
                   సంప్రదించండి
                 </Link>
@@ -77,6 +83,14 @@ export default function RootLayout({ children }) {
               <Link href="/" className="mobile-nav-item">
                 <Home />
                 <span>హోమ్</span>
+              </Link>
+              <Link href="/blog" className="mobile-nav-item">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
+                <span>బ్లాగ్</span>
+              </Link>
+              <Link href="/categories" className="mobile-nav-item">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                <span>విభాగాలు</span>
               </Link>
               <Link href="/contact" className="mobile-nav-item">
                 <Phone />
