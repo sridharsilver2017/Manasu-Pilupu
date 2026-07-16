@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation';
 import ShareButtons from './ShareButtons';
 import Comments from './Comments';
 import GoogleTranslate from '@/components/GoogleTranslate';
+import AppDownloadButton from '@/components/AppDownloadButton';
 
 function decodeHtmlEntities(text) {
   if (!text) return '';
@@ -149,6 +150,8 @@ export default async function Post({ params }) {
             </Link>
           </div>
         </div>
+
+        <AppDownloadButton style={{ marginTop: '30px' }} />
 
         {(prevPost || nextPost) && (
           (() => {

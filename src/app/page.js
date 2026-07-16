@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from 'next/link';
 import { getPaginatedPosts } from '@/lib/api';
 import Pagination from '@/components/Pagination';
-
+import AppDownloadButton from '@/components/AppDownloadButton';
 export default async function Home() {
   const currentPage = 1;
   const { posts, totalPages } = await getPaginatedPosts(currentPage, 9);
@@ -18,6 +18,7 @@ export default async function Home() {
           <p>
             సాహిత్యంపై ఉన్న మక్కువతో, నా మనసులోని భావాలకు అక్షర రూపం ఇచ్చే చిన్న ప్రయత్నమే ఈ వేదిక. ఇక్కడ మీరు చదివే ప్రతి కథ, కవిత, వ్యాసం నా అంతరంగంలోంచి పుట్టినవే. ఆధునిక ప్రపంచపు హడావిడికి దూరంగా, కాసేపు ప్రశాంతంగా కూర్చుని చదువుకోవడానికి ఈ వెబ్‌సైట్‌ను సృష్టించాను. మీ పఠనానుభూతి ప్రశాంతంగా, ఆనందంగా సాగాలని మనస్ఫూర్తిగా ఆశిస్తున్నాను.
           </p>
+          <AppDownloadButton style={{ marginTop: '20px' }} />
         </div>
       </section>
 

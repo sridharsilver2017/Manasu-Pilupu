@@ -6,6 +6,7 @@ import { Home, Phone, Heart } from "lucide-react";
 import { ThemeProvider } from '@/components/ThemeProvider';
 import ThemeToggle from '@/components/ThemeToggle';
 import PwaRegistry from "@/components/PwaRegistry";
+import PushNotificationManager from "@/components/PushNotificationManager";
 
 const ramabhadra = Ramabhadra({ 
   weight: "400", 
@@ -45,6 +46,7 @@ export default function RootLayout({ children }) {
       <body suppressHydrationWarning>
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
           <PwaRegistry />
+          <PushNotificationManager />
           <div className="container">
             <header className="site-header">
               <Link href="/" className="logo" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>

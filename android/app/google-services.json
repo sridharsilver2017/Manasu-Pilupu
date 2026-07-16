@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "442851800507",
+    "project_id": "manasupilupu",
+    "storage_bucket": "manasupilupu.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:442851800507:android:c0c33208c6a671f78c009e",
+        "android_client_info": {
+          "package_name": "com.manasupilupu.blog"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBjzlZFF60PGPXurQNX6aIrsGmvaossl1I"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

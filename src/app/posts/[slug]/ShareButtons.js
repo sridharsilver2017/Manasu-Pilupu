@@ -7,7 +7,11 @@ export default function ShareButtons({ title }) {
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
-    setUrl(window.location.href);
+    let currentUrl = window.location.href;
+    if (currentUrl.includes('localhost')) {
+      currentUrl = currentUrl.replace(/https?:\/\/localhost(:\d+)?/, 'https://manasupilupu.pages.dev');
+    }
+    setUrl(currentUrl);
   }, []);
 
   const handleCopyLink = () => {
