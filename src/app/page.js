@@ -1,12 +1,28 @@
+"use client";
+
 import Link from 'next/link';
-import { getPaginatedPosts } from '@/lib/api';
+import { useState, useEffect } from 'react';
+import { getPaginatedPostsClient } from '@/lib/api-client';
 import AppDownloadButton from '@/components/AppDownloadButton';
-import Pagination from '@/components/Pagination';
 import PostCard from '@/components/PostCard';
 
-export default async function Home() {
-  const currentPage = 1;
-  const { posts } = await getPaginatedPosts(currentPage, 6);
+export default function Home() {
+  const [posts, setPosts] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadPosts() {
+      try {
+        const { posts: fetchedPosts } = await getPaginatedPostsClient(1, 6);
+        setPosts(fetchedPosts);
+      } catch (e) {
+        console.error(e);
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadPosts();
+  }, []);
 
   return (
     <div className="home-wrapper">
@@ -28,11 +44,15 @@ export default async function Home() {
           <h2>తాజా వ్యాసాలు</h2>
         </div>
 
-        <div className="posts-grid">
-          {posts.map((post) => (
-            <PostCard key={post.id} post={post} />
-          ))}
-        </div>
+        {loading ? (
+          <div style={{ textAlign: 'center', padding: '40px' }}>Loading posts...</div>
+        ) : (
+          <div className="posts-grid">
+            {posts.map((post) => (
+              <PostCard key={post.id} post={post} />
+            ))}
+          </div>
+        )}
         
         <div style={{ textAlign: 'center', marginTop: '40px' }}>
           <Link href="/blog" className="btn-primary" style={{ padding: '10px 24px', borderRadius: '30px', display: 'inline-block', textDecoration: 'none', fontWeight: 'bold' }}>

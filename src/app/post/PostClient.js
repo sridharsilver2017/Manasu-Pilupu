@@ -1,6 +1,9 @@
-import { getAllPosts, getPostBySlug } from '@/lib/api';
+"use client";
+
+import { useState, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
+import { getPostBySlugClient, getAllPostsClient } from '@/lib/api-client';
 import Link from 'next/link';
-import { notFound } from 'next/navigation';
 import ShareButtons from './ShareButtons';
 import Comments from './Comments';
 import GoogleTranslate from '@/components/GoogleTranslate';
@@ -24,80 +27,51 @@ function decodeHtmlEntities(text) {
     .replace(/&#39;/g, "'");
 }
 
-export async function generateStaticParams() {
-  const posts = await getAllPosts();
-  return posts.map((post) => ({
-    slug: post.slug,
-  }));
-}
+export default function PostClient() {
+  const searchParams = useSearchParams();
+  const slug = searchParams.get('slug');
+  
+  const [post, setPost] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [allPosts, setAllPosts] = useState([]);
 
-export async function generateMetadata({ params }) {
-  const { slug } = await params;
-  const post = await getPostBySlug(slug);
+  useEffect(() => {
+    async function loadPost() {
+      if (!slug) {
+        setLoading(false);
+        return;
+      }
+      try {
+        const fetchedPost = await getPostBySlugClient(slug);
+        setPost(fetchedPost);
+        
+        // Also fetch all posts for navigation (prev/next)
+        // In a real app, you might want to optimize this by only fetching the prev/next directly
+        const posts = await getAllPostsClient();
+        setAllPosts(posts);
+      } catch (e) {
+        console.error(e);
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadPost();
+  }, [slug]);
+
+  if (loading) {
+    return <div style={{ padding: '40px', textAlign: 'center' }}>Loading post...</div>;
+  }
 
   if (!post) {
-    return { title: 'Post Not Found' };
+    return (
+      <div style={{ padding: '40px', textAlign: 'center' }}>
+        <h2>Post Not Found</h2>
+        <Link href="/">Back to Home</Link>
+      </div>
+    );
   }
 
-  // Clean HTML from excerpt and title
-  let cleanDescription = decodeHtmlEntities(post.excerpt.rendered.replace(/<[^>]+>/g, '').trim());
-  
-  // Truncate description for SEO (ideal length is around 150-160 characters)
-  if (cleanDescription.length > 160) {
-    cleanDescription = cleanDescription.substring(0, 157) + '...';
-  }
-  cleanDescription = cleanDescription || 'మనసులోంచి వచ్చిన మాటలు';
-
-  const cleanTitle = decodeHtmlEntities(post.title.rendered.replace(/<[^>]+>/g, '').trim());
-  
-  const imageUrl = post._embedded && post._embedded['wp:featuredmedia'] 
-    ? post._embedded['wp:featuredmedia'][0].source_url 
-    : '/icon.png';
-
-  const siteName = 'మనసు పిలుపు';
-
-  return {
-    title: cleanTitle,
-    description: cleanDescription,
-    openGraph: {
-      title: cleanTitle,
-      description: cleanDescription,
-      siteName: siteName,
-      type: 'article',
-      url: `/posts/${slug}`,
-      publishedTime: post.date,
-      images: [
-        {
-          url: imageUrl,
-          width: 1200,
-          height: 630,
-          alt: cleanTitle,
-        },
-      ],
-    },
-    alternates: {
-      canonical: `/posts/${slug}`,
-    },
-    twitter: {
-      card: 'summary_large_image',
-      title: cleanTitle,
-      description: cleanDescription,
-      images: [imageUrl],
-    },
-  };
-}
-
-export default async function Post({ params }) {
-  const { slug } = await params;
-  const post = await getPostBySlug(slug);
-
-  if (!post) {
-    notFound();
-  }
-
-  const allPosts = await getAllPosts();
   const currentPostIndex = allPosts.findIndex((p) => p.slug === slug);
-  
   const prevPost = currentPostIndex < allPosts.length - 1 ? allPosts[currentPostIndex + 1] : null;
   const nextPost = currentPostIndex > 0 ? allPosts[currentPostIndex - 1] : null;
 
@@ -138,7 +112,7 @@ export default async function Post({ params }) {
                 return categories.length > 0 ? (
                   <div className="post-categories" style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
                     {categories.map(cat => (
-                      <Link href={`/category/${cat.slug}`} key={cat.id} style={{ 
+                      <Link href={`/category?slug=${cat.slug}`} key={cat.id} style={{ 
                         fontSize: '0.8rem', 
                         backgroundColor: 'var(--primary-color)', 
                         color: '#fff', 
@@ -172,7 +146,7 @@ export default async function Post({ params }) {
 
       {post._embedded && post._embedded['wp:featuredmedia'] && (
         <img
-          src={`${post._embedded['wp:featuredmedia'][0].source_url}?t=${new Date(post.modified || post.date).getTime()}`}
+          src={`${post._embedded['wp:featuredmedia'][0].source_url}`}
           alt={post.title.rendered}
           className="post-featured-image"
         />
@@ -207,12 +181,12 @@ export default async function Post({ params }) {
             return (
               <div className="post-navigation">
                 {prevPost ? (
-                  <Link href={`/posts/${prevPost.slug}`} className="nav-prev">
+                  <Link href={`/post?slug=${prevPost.slug}`} className="nav-prev">
                     &larr; Prev: {truncate(prevPost.title.rendered, 20)}
                   </Link>
                 ) : <div className="nav-prev"></div>}
                 {nextPost ? (
-                  <Link href={`/posts/${nextPost.slug}`} className="nav-next">
+                  <Link href={`/post?slug=${nextPost.slug}`} className="nav-next">
                     Next: {truncate(nextPost.title.rendered, 20)} &rarr;
                   </Link>
                 ) : <div className="nav-next"></div>}

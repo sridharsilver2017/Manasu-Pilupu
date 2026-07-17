@@ -43,7 +43,7 @@ export default async function PaginatedHome({ params }) {
 
         <div className="posts-grid">
           {posts.map((post) => (
-            <Link href={`/posts/${post.slug}`} key={post.id} className="post-card">
+            <Link href={`/post?slug=${post.slug}`} key={post.id} className="post-card">
               {post._embedded && post._embedded['wp:featuredmedia'] && (
                 <div className="post-card-image-wrapper">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
