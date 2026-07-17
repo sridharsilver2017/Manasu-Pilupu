@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { getPaginatedPostsClient } from '@/lib/api-client';
+import { getPaginatedPostsClient, getCachedPaginatedPosts } from '@/lib/api-client';
 import PostCard from '@/components/PostCard';
 
 export default function BlogClient() {
@@ -13,7 +13,15 @@ export default function BlogClient() {
 
   useEffect(() => {
     async function loadInitialPosts() {
-      setLoading(true);
+      const cached = getCachedPaginatedPosts(1, 9);
+      if (cached && cached.posts) {
+        setPosts(cached.posts);
+        setTotalPages(cached.totalPages);
+        setLoading(false);
+      } else {
+        setLoading(true);
+      }
+
       try {
         const data = await getPaginatedPostsClient(1, 9);
         setPosts(data.posts);

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { getPostBySlugClient, getAllPostsClient } from '@/lib/api-client';
+import { getPostBySlugClient, getAllPostsClient, getCachedPostBySlug } from '@/lib/api-client';
 import Link from 'next/link';
 import ShareButtons from './ShareButtons';
 import Comments from './Comments';
@@ -42,6 +42,12 @@ export default function PostClient() {
         return;
       }
       try {
+        const cached = getCachedPostBySlug(slug);
+        if (cached) {
+          setPost(cached);
+          setLoading(false);
+        }
+
         const fetchedPost = await getPostBySlugClient(slug);
         setPost(fetchedPost);
         
@@ -57,6 +63,12 @@ export default function PostClient() {
     }
     loadPost();
   }, [slug]);
+
+  useEffect(() => {
+    if (post && post.title && post.title.rendered) {
+      document.title = `${decodeHtmlEntities(post.title.rendered)} | మనసు పిలుపు`;
+    }
+  }, [post]);
 
   if (loading) {
     return <div style={{ padding: '40px', textAlign: 'center' }}>Loading post...</div>;

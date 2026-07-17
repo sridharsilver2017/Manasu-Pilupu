@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
-import { getPaginatedPostsClient } from '@/lib/api-client';
+import { getPaginatedPostsClient, getCachedPaginatedPosts } from '@/lib/api-client';
 import AppDownloadButton from '@/components/AppDownloadButton';
 import PostCard from '@/components/PostCard';
 
@@ -12,6 +12,14 @@ export default function Home() {
 
   useEffect(() => {
     async function loadPosts() {
+      // 1. Try to load from cache immediately
+      const cached = getCachedPaginatedPosts(1, 6);
+      if (cached && cached.posts) {
+        setPosts(cached.posts);
+        setLoading(false);
+      }
+
+      // 2. Fetch fresh data in the background
       try {
         const { posts: fetchedPosts } = await getPaginatedPostsClient(1, 6);
         setPosts(fetchedPosts);
