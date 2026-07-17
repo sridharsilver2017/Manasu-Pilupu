@@ -105,7 +105,7 @@ export default async function Post({ params }) {
     <article className="single-post animate-fade-in">
       <div className="post-container">
         <Link href="/" className="back-link">
-          &larr; Back to all posts
+          &larr; Back to Blog
         </Link>
         
         <header className="post-header">
