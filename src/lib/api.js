@@ -1,3 +1,6 @@
+import fs from 'fs';
+import path from 'path';
+
 const API_URL = 'https://dev-sridhar-silver.pantheonsite.io/wp-json/wp/v2';
 const BUILD_TIMESTAMP = Date.now();
 const cacheStrategy = process.env.NODE_ENV === 'development' ? 'no-store' : 'force-cache';
@@ -9,7 +12,18 @@ function rewriteImageUrls(post) {
     if (!wpUrl) return wpUrl;
     const match = wpUrl.match(/wp-content\/uploads\/(.*)$/);
     if (match) {
-      return `/wp-images/${match[1].replace(/\//g, '-')}`;
+      const filename = match[1].replace(/\//g, '-');
+      
+      try {
+        const fullPath = path.join(process.cwd(), 'public', 'wp-images', filename);
+        if (!fs.existsSync(fullPath)) {
+          return wpUrl;
+        }
+      } catch (e) {
+        // Fallback to original url if fs check fails
+      }
+      
+      return `/wp-images/${filename}`;
     }
     return wpUrl;
   };
