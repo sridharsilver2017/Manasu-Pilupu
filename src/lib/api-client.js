@@ -26,8 +26,8 @@ export function getCachedPaginatedPosts(page = 1, perPage = 9) {
 }
 
 export async function getPaginatedPostsClient(page = 1, perPage = 9) {
-  // Use cache: 'no-store' to ensure we always get live data
-  const res = await fetch(`${API_URL}/posts?per_page=${perPage}&page=${page}&_embed=1`, { 
+  // Use cache: 'no-store' to ensure we always get live data and bypass Pantheon Varnish cache
+  const res = await fetch(`${API_URL}/posts?per_page=${perPage}&page=${page}&_embed=1&_t=${Date.now()}`, { 
     cache: 'no-store' 
   });
   
@@ -46,7 +46,7 @@ export async function getPaginatedPostsClient(page = 1, perPage = 9) {
 }
 
 export async function getAllPostsClient() {
-  const res = await fetch(`${API_URL}/posts?per_page=100&_embed=1`, { cache: 'no-store' });
+  const res = await fetch(`${API_URL}/posts?per_page=100&_embed=1&_t=${Date.now()}`, { cache: 'no-store' });
   if (!res.ok) {
     throw new Error('Failed to fetch posts');
   }
@@ -61,7 +61,7 @@ export function getCachedPostBySlug(slug) {
 }
 
 export async function getPostBySlugClient(slug) {
-  const res = await fetch(`${API_URL}/posts?slug=${slug}&_embed=1`, { cache: 'no-store' });
+  const res = await fetch(`${API_URL}/posts?slug=${slug}&_embed=1&_t=${Date.now()}`, { cache: 'no-store' });
   if (!res.ok) {
     throw new Error('Failed to fetch post');
   }
@@ -74,7 +74,7 @@ export async function getPostBySlugClient(slug) {
 }
 
 export async function getCommentsByPostIdClient(postId) {
-  const res = await fetch(`${API_URL}/comments?post=${postId}&order=asc`, { cache: 'no-store' });
+  const res = await fetch(`${API_URL}/comments?post=${postId}&order=asc&_t=${Date.now()}`, { cache: 'no-store' });
   if (!res.ok) {
     return [];
   }
@@ -82,7 +82,7 @@ export async function getCommentsByPostIdClient(postId) {
 }
 
 export async function getAllCategoriesClient() {
-  const res = await fetch(`${API_URL}/categories?per_page=100`, { cache: 'no-store' });
+  const res = await fetch(`${API_URL}/categories?per_page=100&_t=${Date.now()}`, { cache: 'no-store' });
   if (!res.ok) {
     throw new Error('Failed to fetch categories');
   }
@@ -90,7 +90,7 @@ export async function getAllCategoriesClient() {
 }
 
 export async function getCategoryBySlugClient(slug) {
-  const res = await fetch(`${API_URL}/categories?slug=${slug}`, { cache: 'no-store' });
+  const res = await fetch(`${API_URL}/categories?slug=${slug}&_t=${Date.now()}`, { cache: 'no-store' });
   if (!res.ok) {
     throw new Error('Failed to fetch category');
   }
@@ -99,7 +99,7 @@ export async function getCategoryBySlugClient(slug) {
 }
 
 export async function getPostsByCategoryClient(categoryId, page = 1, perPage = 9) {
-  const res = await fetch(`${API_URL}/posts?categories=${categoryId}&per_page=${perPage}&page=${page}&_embed=1`, { cache: 'no-store' });
+  const res = await fetch(`${API_URL}/posts?categories=${categoryId}&per_page=${perPage}&page=${page}&_embed=1&_t=${Date.now()}`, { cache: 'no-store' });
   if (!res.ok) {
     throw new Error('Failed to fetch posts for category');
   }
