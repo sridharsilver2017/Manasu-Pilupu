@@ -27,9 +27,9 @@ function decodeHtmlEntities(text) {
     .replace(/&#39;/g, "'");
 }
 
-export default function PostClient() {
+export default function PostClient({ initialSlug }) {
   const searchParams = useSearchParams();
-  const slug = searchParams.get('slug');
+  const slug = initialSlug || searchParams.get('slug');
   
   const [post, setPost] = useState(null);
   const [loading, setLoading] = useState(true);

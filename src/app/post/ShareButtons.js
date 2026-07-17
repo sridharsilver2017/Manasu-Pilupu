@@ -8,8 +8,16 @@ export default function ShareButtons({ title }) {
 
   useEffect(() => {
     let currentUrl = window.location.href;
-    if (currentUrl.includes('localhost')) {
-      currentUrl = currentUrl.replace(/https?:\/\/localhost(:\d+)?/, 'https://manasupilupu.pages.dev');
+    const searchParams = new URLSearchParams(window.location.search);
+    const slug = searchParams.get('slug');
+
+    // Always share the SEO-friendly static route instead of the query param route
+    if (slug) {
+      currentUrl = `https://manasupilupu.pages.dev/posts/${slug}`;
+    } else {
+      // Fallback for paths that don't have slugs
+      const pathPart = window.location.pathname;
+      currentUrl = `https://manasupilupu.pages.dev${pathPart}`;
     }
     setUrl(currentUrl);
   }, []);
