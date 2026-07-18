@@ -81,9 +81,18 @@ export default async function StaticPostPage({ params }) {
   // We render the exact same UI as the mobile app, but pass the slug directly
   // so it doesn't have to rely purely on query parameters.
   const resolvedParams = await params;
+  let initialPost = null;
+  let initialAllPosts = [];
+  try {
+    initialPost = await getPostBySlug(resolvedParams.slug);
+    initialAllPosts = await getAllPosts();
+  } catch (e) {
+    console.error('Failed to fetch initial post data:', e);
+  }
+
   return (
     <Suspense fallback={<div style={{ padding: '40px', textAlign: 'center' }}>Loading post...</div>}>
-      <PostClient initialSlug={resolvedParams.slug} />
+      <PostClient initialSlug={resolvedParams.slug} initialPost={initialPost} initialAllPosts={initialAllPosts} />
     </Suspense>
   );
 }

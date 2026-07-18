@@ -4,11 +4,11 @@ import { useState, useEffect } from 'react';
 import { getPaginatedPostsClient, getCachedPaginatedPosts } from '@/lib/api-client';
 import PostCard from '@/components/PostCard';
 
-export default function BlogClient() {
-  const [posts, setPosts] = useState([]);
-  const [loading, setLoading] = useState(true);
+export default function BlogClient({ initialPosts = [], initialTotalPages = 1 }) {
+  const [posts, setPosts] = useState(initialPosts);
+  const [loading, setLoading] = useState(initialPosts.length === 0);
   const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
+  const [totalPages, setTotalPages] = useState(initialTotalPages);
   const [loadingMore, setLoadingMore] = useState(false);
 
   useEffect(() => {

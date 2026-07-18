@@ -27,13 +27,13 @@ function decodeHtmlEntities(text) {
     .replace(/&#39;/g, "'");
 }
 
-export default function PostClient({ initialSlug }) {
+export default function PostClient({ initialSlug, initialPost, initialAllPosts = [] }) {
   const searchParams = useSearchParams();
   const slug = initialSlug || searchParams.get('slug');
   
-  const [post, setPost] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [allPosts, setAllPosts] = useState([]);
+  const [post, setPost] = useState(initialPost || null);
+  const [loading, setLoading] = useState(!initialPost);
+  const [allPosts, setAllPosts] = useState(initialAllPosts);
 
   useEffect(() => {
     async function loadPost() {
@@ -43,18 +43,20 @@ export default function PostClient({ initialSlug }) {
       }
       try {
         const cached = getCachedPostBySlug(slug);
-        if (cached) {
+        if (cached && !initialPost) {
           setPost(cached);
           setLoading(false);
         }
 
         const fetchedPost = await getPostBySlugClient(slug);
         setPost(fetchedPost);
+        setLoading(false); // Unblock UI as soon as we have the post!
         
         // Also fetch all posts for navigation (prev/next)
-        // In a real app, you might want to optimize this by only fetching the prev/next directly
-        const posts = await getAllPostsClient();
-        setAllPosts(posts);
+        if (initialAllPosts.length === 0) {
+          const posts = await getAllPostsClient();
+          setAllPosts(posts);
+        }
       } catch (e) {
         console.error(e);
       } finally {
