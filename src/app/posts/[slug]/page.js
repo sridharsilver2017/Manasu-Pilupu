@@ -33,7 +33,8 @@ function decodeHtmlEntities(text) {
 
 export async function generateMetadata({ params }) {
   try {
-    const post = await getPostBySlug(params.slug);
+    const resolvedParams = await params;
+    const post = await getPostBySlug(resolvedParams.slug);
     if (!post) {
       return {
         title: 'Post Not Found | మనసు పిలుపు',
@@ -42,7 +43,12 @@ export async function generateMetadata({ params }) {
 
     const title = decodeHtmlEntities(post.title.rendered);
     const description = decodeHtmlEntities(post.excerpt?.rendered?.replace(/(<([^>]+)>)/gi, "") || 'మనసులోంచి వచ్చిన మాటలు');
-    const imageUrl = post._embedded?.['wp:featuredmedia']?.[0]?.source_url;
+    let imageUrl = post._embedded?.['wp:featuredmedia']?.[0]?.source_url;
+    
+    // Ensure the image URL is absolute for social sharing
+    if (imageUrl && imageUrl.startsWith('/')) {
+      imageUrl = `https://manasupilupu.pages.dev${imageUrl}`;
+    }
 
     return {
       title: `${title} | మనసు పిలుపు`,
@@ -51,7 +57,7 @@ export async function generateMetadata({ params }) {
         title,
         description,
         type: 'article',
-        url: `https://manasupilupu.pages.dev/posts/${params.slug}`,
+        url: `https://manasupilupu.pages.dev/posts/${resolvedParams.slug}`,
         images: imageUrl ? [imageUrl] : [],
       },
       twitter: {
@@ -71,12 +77,13 @@ export async function generateMetadata({ params }) {
 
 import { Suspense } from 'react';
 
-export default function StaticPostPage({ params }) {
+export default async function StaticPostPage({ params }) {
   // We render the exact same UI as the mobile app, but pass the slug directly
   // so it doesn't have to rely purely on query parameters.
+  const resolvedParams = await params;
   return (
     <Suspense fallback={<div style={{ padding: '40px', textAlign: 'center' }}>Loading post...</div>}>
-      <PostClient initialSlug={params.slug} />
+      <PostClient initialSlug={resolvedParams.slug} />
     </Suspense>
   );
 }
