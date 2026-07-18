@@ -195,12 +195,12 @@ export default function PostClient({ initialSlug, initialPost, initialAllPosts =
             return (
               <div className="post-navigation">
                 {prevPost ? (
-                  <Link href={`/post?slug=${prevPost.slug}`} className="nav-prev">
+                  <Link href={`/posts/${prevPost.slug}`} className="nav-prev">
                     &larr; Prev: {truncate(prevPost.title.rendered, 20)}
                   </Link>
                 ) : <div className="nav-prev"></div>}
                 {nextPost ? (
-                  <Link href={`/post?slug=${nextPost.slug}`} className="nav-next">
+                  <Link href={`/posts/${nextPost.slug}`} className="nav-next">
                     Next: {truncate(nextPost.title.rendered, 20)} &rarr;
                   </Link>
                 ) : <div className="nav-next"></div>}

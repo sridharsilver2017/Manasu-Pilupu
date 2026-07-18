@@ -10,7 +10,7 @@ export default function PostCard({ post }) {
     <div className="post-card" style={{ position: 'relative' }}>
       {post._embedded && post._embedded['wp:featuredmedia'] && (
         <div className="post-card-image-wrapper" style={{ position: 'relative' }}>
-          <Link href={`/post?slug=${post.slug}`} style={{ display: 'block', width: '100%', height: '100%' }}>
+          <Link href={`/posts/${post.slug}`} style={{ display: 'block', width: '100%', height: '100%' }}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={`${post._embedded['wp:featuredmedia'][0].source_url}?t=${new Date(post.modified || post.date).getTime()}`}
@@ -21,7 +21,7 @@ export default function PostCard({ post }) {
         </div>
       )}
       <div className="post-card-content">
-        <Link href={`/post?slug=${post.slug}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+        <Link href={`/posts/${post.slug}`} style={{ textDecoration: 'none', color: 'inherit' }}>
           <h2
             className="post-card-title"
             dangerouslySetInnerHTML={{ __html: post.title.rendered }}
@@ -39,7 +39,7 @@ export default function PostCard({ post }) {
               </Link>
             ))}
           </div>
-          <Link href={`/post?slug=${post.slug}`} className="read-more-link" style={{ textDecoration: 'none' }}>
+          <Link href={`/posts/${post.slug}`} className="read-more-link" style={{ textDecoration: 'none' }}>
             మరింత చదవండి <span className="arrow">&rarr;</span>
           </Link>
         </div>
