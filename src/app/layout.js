@@ -32,11 +32,20 @@ export const metadata = {
     description: "మనసులోంచి వచ్చిన మాటలు",
     type: "website",
     locale: "te_IN",
+    images: [
+      {
+        url: 'https://manasupilupu.pages.dev/icon-512x512.png',
+        width: 512,
+        height: 512,
+        alt: 'మనసు పిలుపు',
+      }
+    ]
   },
   twitter: {
     card: "summary_large_image",
     title: "మనసు పిలుపు | మనసులోంచి వచ్చిన మాటలు",
     description: "మనసులోంచి వచ్చిన మాటలు",
+    images: ['https://manasupilupu.pages.dev/icon-512x512.png'],
   }
 };
 

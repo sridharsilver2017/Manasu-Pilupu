@@ -50,6 +50,8 @@ export async function generateMetadata({ params }) {
       imageUrl = `https://manasupilupu.pages.dev${imageUrl}`;
     }
 
+    const finalImage = imageUrl || 'https://manasupilupu.pages.dev/icon-512x512.png';
+
     return {
       title: `${title} | మనసు పిలుపు`,
       description,
@@ -58,20 +60,20 @@ export async function generateMetadata({ params }) {
         description,
         type: 'article',
         url: `https://manasupilupu.pages.dev/posts/${resolvedParams.slug}`,
-        images: imageUrl ? [
+        images: [
           {
-            url: imageUrl,
-            width: 1200,
-            height: 630,
+            url: finalImage,
+            width: imageUrl ? 1200 : 512,
+            height: imageUrl ? 630 : 512,
             alt: title,
           }
-        ] : [],
+        ],
       },
       twitter: {
         card: 'summary_large_image',
         title,
         description,
-        images: imageUrl ? [imageUrl] : [],
+        images: [finalImage],
       },
     };
   } catch (error) {
