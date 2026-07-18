@@ -50,7 +50,7 @@ export async function generateMetadata({ params }) {
       imageUrl = `https://manasupilupu.pages.dev${imageUrl}`;
     }
 
-    const finalImage = imageUrl || 'https://manasupilupu.pages.dev/icon-512x512.png';
+    const finalImage = imageUrl || 'https://manasupilupu.pages.dev/default-share.jpg';
 
     return {
       title: `${title} | మనసు పిలుపు`,
@@ -63,8 +63,8 @@ export async function generateMetadata({ params }) {
         images: [
           {
             url: finalImage,
-            width: imageUrl ? 1200 : 512,
-            height: imageUrl ? 630 : 512,
+            width: imageUrl ? 1200 : 1200,
+            height: imageUrl ? 630 : 630,
             alt: title,
           }
         ],

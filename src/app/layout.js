@@ -34,9 +34,9 @@ export const metadata = {
     locale: "te_IN",
     images: [
       {
-        url: 'https://manasupilupu.pages.dev/icon-512x512.png',
-        width: 512,
-        height: 512,
+        url: 'https://manasupilupu.pages.dev/default-share.jpg',
+        width: 1200,
+        height: 630,
         alt: 'మనసు పిలుపు',
       }
     ]
@@ -45,7 +45,7 @@ export const metadata = {
     card: "summary_large_image",
     title: "మనసు పిలుపు | మనసులోంచి వచ్చిన మాటలు",
     description: "మనసులోంచి వచ్చిన మాటలు",
-    images: ['https://manasupilupu.pages.dev/icon-512x512.png'],
+    images: ['https://manasupilupu.pages.dev/default-share.jpg'],
   }
 };
 
