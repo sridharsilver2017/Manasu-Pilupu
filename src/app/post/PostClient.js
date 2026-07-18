@@ -8,6 +8,7 @@ import ShareButtons from './ShareButtons';
 import Comments from './Comments';
 import GoogleTranslate from '@/components/GoogleTranslate';
 import AppDownloadButton from '@/components/AppDownloadButton';
+import LikeButton from '../../components/LikeButton';
 
 function decodeHtmlEntities(text) {
   if (!text) return '';
@@ -151,7 +152,8 @@ export default function PostClient({ initialSlug, initialPost, initialAllPosts =
               </span>
             </div>
 
-            <div style={{ display: 'flex', alignItems: 'center' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+              <LikeButton postId={post.id} />
               <GoogleTranslate />
             </div>
           </div>

@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import LikeButton from './LikeButton';
 
 export default function PostCard({ post }) {
   // Extract categories from _embedded
@@ -39,9 +40,12 @@ export default function PostCard({ post }) {
               </Link>
             ))}
           </div>
-          <Link href={`/posts/${post.slug}`} className="read-more-link" style={{ textDecoration: 'none' }}>
-            మరింత చదవండి <span className="arrow">&rarr;</span>
-          </Link>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <LikeButton postId={post.id} style={{ padding: '4px 8px', fontSize: '12px', height: '28px' }} />
+            <Link href={`/posts/${post.slug}`} className="read-more-link" style={{ textDecoration: 'none' }}>
+              మరింత చదవండి <span className="arrow">&rarr;</span>
+            </Link>
+          </div>
         </div>
       </div>
     </div>
