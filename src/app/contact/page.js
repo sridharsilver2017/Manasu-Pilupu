@@ -18,22 +18,29 @@ export default function ContactPage() {
     const data = {
       name: formData.get('name'),
       email: formData.get('email'),
+      phone: formData.get('phone'),
       message: formData.get('message'),
     };
 
+    // Since this is a static app (Capacitor), we cannot use local Next.js API routes.
+    // Instead, we use Web3Forms (a free service) to collect submissions and email them to you.
+    // Get your free access key at https://web3forms.com/ and replace 'YOUR_ACCESS_KEY_HERE'
+    data.access_key = '6207e080-d3d5-4b61-96ec-679c5ccafd1e';
+
     try {
-      const response = await fetch('/api/contact', {
+      const response = await fetch('https://api.web3forms.com/submit', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Accept': 'application/json'
         },
         body: JSON.stringify(data),
       });
 
       const result = await response.json();
-
-      if (!response.ok) {
-        throw new Error(result.error || 'Something went wrong');
+      
+      if (!response.ok || !result.success) {
+        throw new Error(result.message || 'Something went wrong');
       }
 
       setSuccess(true);
@@ -102,6 +109,25 @@ export default function ContactPage() {
                 name="email" 
                 placeholder="మీ ఈమెయిల్..." 
                 required
+                style={{ 
+                  padding: '12px 16px', 
+                  borderRadius: '8px', 
+                  border: '1px solid var(--border-color)', 
+                  backgroundColor: 'var(--card-bg)', 
+                  color: 'var(--text-color)',
+                  fontFamily: 'inherit',
+                  outline: 'none'
+                }} 
+              />
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <label htmlFor="phone" style={{ fontWeight: '500' }}>ఫోన్ నంబర్ (Phone) - ఐచ్ఛికం (Optional)</label>
+              <input 
+                type="tel" 
+                id="phone" 
+                name="phone" 
+                placeholder="మీ ఫోన్ నంబర్..." 
                 style={{ 
                   padding: '12px 16px', 
                   borderRadius: '8px', 

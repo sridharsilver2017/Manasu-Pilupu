@@ -30,6 +30,7 @@ export const metadata = {
   openGraph: {
     title: "మనసు పిలుపు | మనసులోంచి వచ్చిన మాటలు",
     description: "మనసులోంచి వచ్చిన మాటలు",
+    url: 'https://manasupilupu.pages.dev',
     type: "website",
     locale: "te_IN",
     images: [
@@ -85,6 +86,9 @@ export default function RootLayout({ children }) {
             
             <footer className="site-footer">
               <p>&copy; {new Date().getFullYear()} మనసు పిలుపు. All rights reserved.</p>
+              <div style={{ display: 'flex', gap: '15px', justifyContent: 'center', marginTop: '10px', marginBottom: '10px' }}>
+                <Link href="/privacy-policy" style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', textDecoration: 'none' }}>ప్రైవసీ పాలసీ</Link>
+              </div>
               <p className="footer-credits" style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
                 Designed by <a href="https://advaitadesigns.com/" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--primary-color)', textDecoration: 'none', fontWeight: 'bold' }}>Advaita Designs</a>
               </p>
