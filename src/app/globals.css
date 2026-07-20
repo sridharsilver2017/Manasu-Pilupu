@@ -617,6 +617,51 @@ h1 b, h2 b, h3 b, h4 b, h5 b, h6 b,
   }
 }
 
+.post-meta-container {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  position: relative;
+  z-index: 999;
+  margin: 24px 0;
+  padding: 16px 20px;
+  background-color: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  box-shadow: var(--shadow-sm);
+  gap: 16px;
+}
+
+.post-meta-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.post-meta-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+@media (max-width: 640px) {
+  .post-meta-container {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 20px;
+  }
+  .post-meta-right {
+    width: 100%;
+    justify-content: space-between;
+  }
+  .post-meta-separator {
+    display: none;
+  }
+}
+
 .post-meta {
   color: var(--text-muted);
   font-size: 0.8rem;
