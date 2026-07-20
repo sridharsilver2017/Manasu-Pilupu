@@ -93,7 +93,7 @@ export default function PostClient({ initialSlug, initialPost, initialAllPosts =
   return (
     <article className="single-post animate-fade-in">
       <div className="post-container">
-        <Link href="/" className="back-link">
+        <Link href="/blog" className="back-link">
           &larr; Back to Blog
         </Link>
         
