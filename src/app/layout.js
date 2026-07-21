@@ -76,9 +76,9 @@ export default function RootLayout({ children }) {
                 <Link href="/contact" className="nav-link">
                   సంప్రదించండి
                 </Link>
-                <Link href="/support" className="support-nav-btn">
+                {/* <Link href="/support" className="support-nav-btn">
                   నన్ను సపోర్ట్ చేయండి
-                </Link>
+                </Link> */}
               </nav>
             </header>
             
@@ -112,10 +112,10 @@ export default function RootLayout({ children }) {
                 <Phone />
                 <span>సంప్రదించండి</span>
               </Link>
-              <Link href="/support" className="mobile-nav-item">
+              {/* <Link href="/support" className="mobile-nav-item">
                 <Heart />
                 <span>సపోర్ట్</span>
-              </Link>
+              </Link> */}
               <div className="mobile-nav-item">
                 <ThemeToggle />
                 <span>థీమ్</span>

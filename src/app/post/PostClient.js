@@ -160,7 +160,7 @@ export default function PostClient({ initialSlug, initialPost, initialAllPosts =
         />
         
 
-        <div className="support-message">
+        {/* <div className="support-message">
           <p>
             ఈ బ్లాగ్‌లోని రచనలు మీకు నచ్చినట్లయితే, ఈ స్వచ్ఛమైన ప్రయాణం ఇలాగే ముందుకు సాగడానికి మీ వంతు మద్దతు అందించండి.
           </p>
@@ -169,7 +169,7 @@ export default function PostClient({ initialSlug, initialPost, initialAllPosts =
               నన్ను సపోర్ట్ చేయండి
             </Link>
           </div>
-        </div>
+        </div> */}
 
         <AppDownloadButton style={{ marginTop: '30px' }} />
 
