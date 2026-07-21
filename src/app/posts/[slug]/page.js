@@ -45,9 +45,29 @@ export async function generateMetadata({ params }) {
     const description = decodeHtmlEntities(post.excerpt?.rendered?.replace(/(<([^>]+)>)/gi, "") || 'మనసులోంచి వచ్చిన మాటలు');
     let imageUrl = post._embedded?.['wp:featuredmedia']?.[0]?.source_url;
     
+    // If the image is a WordPress upload, convert it to the local filename
+    // based on how scripts/download-images.js saves it.
+    if (imageUrl) {
+      const match = imageUrl.match(/wp-content\/uploads\/(.*)$/);
+      if (match) {
+        const localFilename = match[1].replace(/\//g, '-');
+        imageUrl = `/wp-images/${localFilename}`;
+      }
+    }
+
     // Ensure the image URL is absolute for social sharing
     if (imageUrl && imageUrl.startsWith('/')) {
       imageUrl = `https://manasupilupu.pages.dev${imageUrl}`;
+    }
+
+    // Safely encode the URL to prevent "Bad Response Code" from Facebook scraper 
+    // when file names contain spaces or non-English characters.
+    if (imageUrl) {
+      try {
+        imageUrl = new URL(imageUrl).href;
+      } catch (e) {
+        imageUrl = encodeURI(imageUrl);
+      }
     }
 
     const finalImage = imageUrl || 'https://manasupilupu.pages.dev/default-share.jpg';
