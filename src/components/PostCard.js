@@ -7,14 +7,25 @@ export default function PostCard({ post }) {
     ? post._embedded['wp:term'][0].filter(term => term.taxonomy === 'category')
     : [];
 
+  let imageUrl = post._embedded?.['wp:featuredmedia']?.[0]?.source_url;
+  if (imageUrl) {
+    const match = imageUrl.match(/wp-content\/uploads\/(.*)$/);
+    if (match) {
+      const localFilename = match[1].replace(/\//g, '-');
+      imageUrl = `/wp-images/${localFilename}?t=${new Date(post.modified || post.date).getTime()}`;
+    } else {
+      imageUrl = `${imageUrl}?t=${new Date(post.modified || post.date).getTime()}`;
+    }
+  }
+
   return (
     <div className="post-card" style={{ position: 'relative' }}>
-      {post._embedded && post._embedded['wp:featuredmedia'] && (
+      {imageUrl && (
         <div className="post-card-image-wrapper" style={{ position: 'relative' }}>
           <Link href={`/posts/${post.slug}`} style={{ display: 'block', width: '100%', height: '100%' }}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src={`${post._embedded['wp:featuredmedia'][0].source_url}?t=${new Date(post.modified || post.date).getTime()}`}
+              src={imageUrl}
               alt={post.title.rendered}
               className="post-card-image"
             />

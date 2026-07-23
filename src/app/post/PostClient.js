@@ -90,6 +90,24 @@ export default function PostClient({ initialSlug, initialPost, initialAllPosts =
   const prevPost = currentPostIndex < allPosts.length - 1 ? allPosts[currentPostIndex + 1] : null;
   const nextPost = currentPostIndex > 0 ? allPosts[currentPostIndex - 1] : null;
 
+  let featuredImageUrl = post._embedded?.['wp:featuredmedia']?.[0]?.source_url;
+  if (featuredImageUrl) {
+    const match = featuredImageUrl.match(/wp-content\/uploads\/(.*)$/);
+    if (match) {
+      const localFilename = match[1].replace(/\//g, '-');
+      featuredImageUrl = `/wp-images/${localFilename}`;
+    }
+  }
+
+  let postContent = post.content?.rendered || '';
+  if (postContent) {
+    // Replace all wp-content/uploads images with local paths
+    postContent = postContent.replace(/https?:\/\/[^\/]+\/wp-content\/uploads\/([^\"]+)/g, (match, p1) => {
+      const localFilename = p1.replace(/\//g, '-');
+      return `/wp-images/${localFilename}`;
+    });
+  }
+
   return (
     <article className="single-post animate-fade-in">
       <div className="post-container">
@@ -145,9 +163,9 @@ export default function PostClient({ initialSlug, initialPost, initialAllPosts =
         </header>
       </div>
 
-      {post._embedded && post._embedded['wp:featuredmedia'] && (
+      {featuredImageUrl && (
         <img
-          src={`${post._embedded['wp:featuredmedia'][0].source_url}`}
+          src={featuredImageUrl}
           alt={post.title.rendered}
           className="post-featured-image"
         />
@@ -156,7 +174,7 @@ export default function PostClient({ initialSlug, initialPost, initialAllPosts =
       <div className="post-container">
         <div 
           className="post-content"
-          dangerouslySetInnerHTML={{ __html: post.content.rendered }}
+          dangerouslySetInnerHTML={{ __html: postContent }}
         />
         
 
