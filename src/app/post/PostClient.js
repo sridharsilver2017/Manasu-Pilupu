@@ -215,7 +215,7 @@ export default function PostClient({ initialSlug, initialPost, initialAllPosts =
         )}
 
 
-        <Comments postId={post.id} />
+        {/* <Comments postId={post.id} /> */}
 
         <ShareButtons title={decodeHtmlEntities(post.title.rendered)} />
 
