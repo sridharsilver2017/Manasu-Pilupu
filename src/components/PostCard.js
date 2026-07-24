@@ -53,7 +53,7 @@ export default function PostCard({ post }) {
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
             <LikeButton postId={post.id} style={{ padding: '4px 8px', fontSize: '12px', height: '28px' }} />
-            <Link href={`/posts/${post.slug}`} className="read-more-link" style={{ textDecoration: 'none' }}>
+            <Link href={`/posts/${post.slug}`} className="read-more-link" style={{ textDecoration: 'none' }} target="_blank" rel="noopener noreferrer">
               మరింత చదవండి <span className="arrow">&rarr;</span>
             </Link>
           </div>
