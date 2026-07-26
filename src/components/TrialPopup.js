@@ -26,6 +26,8 @@ export default function TrialPopup() {
       width: "100%",
       height: "100%",
       backgroundColor: "rgba(0, 0, 0, 0.6)",
+      backdropFilter: "blur(5px)",
+      WebkitBackdropFilter: "blur(5px)",
       display: "flex",
       alignItems: "center",
       justifyContent: "center",
