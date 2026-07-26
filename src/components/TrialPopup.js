@@ -59,10 +59,10 @@ export default function TrialPopup() {
         </button>
         
         <h2 style={{ marginBottom: "15px", marginTop: "10px", fontSize: "1.5rem" }}>
-          Welcome to the Trial Version!
+          ట్రయల్ వెర్షన్‌కు స్వాగతం!
         </h2>
         <p style={{ lineHeight: "1.6", marginBottom: "20px", color: "var(--text-secondary)" }}>
-          Enjoy free access to all our content for now. Please note that in the future, we will be transitioning to a subscription-based model.
+          ప్రస్తుతానికి మా కంటెంట్ మొత్తాన్ని ఉచితంగా ఆస్వాదించండి. భవిష్యత్తులో, మేము సబ్‌స్క్రిప్షన్ (నెలవారీ రుసుము) పద్ధతికి మారుతాము, దయచేసి గమనించగలరు.
         </p>
         
         <button 
@@ -79,7 +79,7 @@ export default function TrialPopup() {
             width: "100%"
           }}
         >
-          Got it, Thanks!
+          అర్థమైంది, ధన్యవాదాలు!
         </button>
       </div>
     </div>
