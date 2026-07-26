@@ -7,19 +7,13 @@ export default function TrialPopup() {
   const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
-    // Check if the user has already seen the popup in this session or ever
-    const hasSeenPopup = localStorage.getItem("trial_popup_seen");
-    
-    if (!hasSeenPopup) {
-      // Small delay so it doesn't abruptly show on first paint
-      const timer = setTimeout(() => setIsOpen(true), 1500);
-      return () => clearTimeout(timer);
-    }
+    // Small delay so it doesn't abruptly show on first paint
+    const timer = setTimeout(() => setIsOpen(true), 1500);
+    return () => clearTimeout(timer);
   }, []);
 
   const handleClose = () => {
     setIsOpen(false);
-    localStorage.setItem("trial_popup_seen", "true");
   };
 
   if (!isOpen) return null;
