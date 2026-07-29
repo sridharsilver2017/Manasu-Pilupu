@@ -8,6 +8,7 @@ import ThemeToggle from '@/components/ThemeToggle';
 import PwaRegistry from "@/components/PwaRegistry";
 import PushNotificationManager from "@/components/PushNotificationManager";
 import TrialPopup from "@/components/TrialPopup";
+import MaintenanceChecker from "@/components/MaintenanceChecker";
 
 const ramabhadra = Ramabhadra({ 
   weight: "400", 
@@ -55,7 +56,8 @@ export default function RootLayout({ children }) {
   return (
     <html lang="te" className={`${ramabhadra.variable} ${mandali.variable}`} suppressHydrationWarning>
       <body suppressHydrationWarning>
-        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
+        <MaintenanceChecker>
+          <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
           <PwaRegistry />
           <PushNotificationManager />
           <TrialPopup />
@@ -126,6 +128,7 @@ export default function RootLayout({ children }) {
 
           </div>
         </ThemeProvider>
+        </MaintenanceChecker>
       </body>
     </html>
   );
