@@ -1,10 +1,12 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { usePathname } from "next/navigation";
 import { X } from "lucide-react";
 
 export default function TrialPopup() {
   const [isOpen, setIsOpen] = useState(false);
+  const pathname = usePathname();
 
   useEffect(() => {
     // Small delay so it doesn't abruptly show on first paint
@@ -16,7 +18,7 @@ export default function TrialPopup() {
     setIsOpen(false);
   };
 
-  if (!isOpen) return null;
+  if (!isOpen || pathname === '/admin') return null;
 
   return (
     <div style={{
