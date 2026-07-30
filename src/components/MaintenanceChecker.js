@@ -21,7 +21,7 @@ export default function MaintenanceChecker({ children }) {
       }
       
       try {
-        const res = await fetch(`${WP_API_BASE_URL}/status`, { cache: 'no-store' });
+        const res = await fetch(`${WP_API_BASE_URL}/status?t=${Date.now()}`, { cache: 'no-store' });
         if (res.ok) {
           const data = await res.json();
           // Ensure it handles string 'true' or boolean true

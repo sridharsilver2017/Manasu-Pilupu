@@ -17,7 +17,7 @@ export default function AdminPage() {
   useEffect(() => {
     async function fetchStatus() {
       try {
-        const res = await fetch(`${WP_API_BASE_URL}/status`);
+        const res = await fetch(`${WP_API_BASE_URL}/status?t=${Date.now()}`, { cache: 'no-store' });
         if (res.ok) {
           const data = await res.json();
           setIsMaintenance(data.isMaintenance === true || String(data.isMaintenance).toLowerCase() === 'true');
