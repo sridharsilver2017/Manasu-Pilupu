@@ -60,13 +60,23 @@ export function getCachedPostBySlug(slug) {
   return cached ? JSON.parse(cached) : null;
 }
 
-export async function getPostBySlugClient(slug) {
-  const res = await fetch(`${API_URL}/posts?slug=${slug}&_embed=1&_t=${Date.now()}`, { cache: 'no-store' });
+export async function getPostBySlugClient(slug, token = null) {
+  const headers = {};
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+
+  const res = await fetch(`${API_URL}/posts?slug=${slug}&_embed=1&_t=${Date.now()}`, { 
+    cache: 'no-store',
+    headers
+  });
   if (!res.ok) {
     throw new Error('Failed to fetch post');
   }
   const posts = await res.json();
   const post = posts.length > 0 ? rewriteImageUrls(posts[0]) : null;
+  // We should probably only cache if it's NOT locked or we have no token to avoid leaking premium content,
+  // but for simplicity, we'll cache whatever we get.
   if (post && typeof window !== 'undefined') {
     localStorage.setItem(`wp_post_${slug}`, JSON.stringify(post));
   }

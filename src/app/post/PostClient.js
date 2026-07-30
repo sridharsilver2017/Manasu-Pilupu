@@ -28,9 +28,12 @@ function decodeHtmlEntities(text) {
     .replace(/&#39;/g, "'");
 }
 
+import { useAuth } from '@/context/AuthContext';
+
 export default function PostClient({ initialSlug, initialPost, initialAllPosts = [] }) {
   const searchParams = useSearchParams();
   const slug = initialSlug || searchParams.get('slug');
+  const { user, loading: authLoading } = useAuth();
   
   const [post, setPost] = useState(initialPost || null);
   const [loading, setLoading] = useState(!initialPost);
@@ -38,22 +41,23 @@ export default function PostClient({ initialSlug, initialPost, initialAllPosts =
 
   useEffect(() => {
     async function loadPost() {
+      // Don't load until auth state is resolved to avoid fetching without token when user is actually logged in
+      if (authLoading) return;
+
       if (!slug) {
         setLoading(false);
         return;
       }
       try {
         const cached = getCachedPostBySlug(slug);
-        if (cached && !initialPost) {
-          setPost(cached);
-          setLoading(false);
-        }
-
-        const fetchedPost = await getPostBySlugClient(slug);
-        setPost(fetchedPost);
-        setLoading(false); // Unblock UI as soon as we have the post!
+        // Only use cache if it matches our current auth expectation (e.g. if we are premium, we want the full post)
+        // For simplicity, we just fetch it again to be safe
         
-        // Also fetch all posts for navigation (prev/next)
+        const token = user ? user.token : null;
+        const fetchedPost = await getPostBySlugClient(slug, token);
+        setPost(fetchedPost);
+        setLoading(false);
+        
         if (initialAllPosts.length === 0) {
           const posts = await getAllPostsClient();
           setAllPosts(posts);
@@ -65,7 +69,7 @@ export default function PostClient({ initialSlug, initialPost, initialAllPosts =
       }
     }
     loadPost();
-  }, [slug]);
+  }, [slug, user, authLoading]);
 
   useEffect(() => {
     if (post && post.title && post.title.rendered) {
@@ -73,7 +77,7 @@ export default function PostClient({ initialSlug, initialPost, initialAllPosts =
     }
   }, [post]);
 
-  if (loading) {
+  if (loading || authLoading) {
     return <div style={{ padding: '40px', textAlign: 'center' }}>Loading post...</div>;
   }
 
@@ -101,7 +105,6 @@ export default function PostClient({ initialSlug, initialPost, initialAllPosts =
 
   let postContent = post.content?.rendered || '';
   if (postContent) {
-    // Replace all wp-content/uploads images with local paths
     postContent = postContent.replace(/https?:\/\/[^\/]+\/wp-content\/uploads\/([^\"]+)/g, (match, p1) => {
       const localFilename = p1.replace(/\//g, '-');
       return `/wp-images/${localFilename}`;
@@ -174,8 +177,49 @@ export default function PostClient({ initialSlug, initialPost, initialAllPosts =
       <div className="post-container">
         <div 
           className="post-content"
-          dangerouslySetInnerHTML={{ __html: postContent }}
-        />
+          style={{ position: 'relative' }}
+        >
+          <div dangerouslySetInnerHTML={{ __html: postContent }} />
+          
+          {post.is_locked && (
+            <div style={{
+              position: 'absolute',
+              bottom: 0,
+              left: 0,
+              right: 0,
+              height: '300px',
+              background: 'linear-gradient(to bottom, transparent, var(--bg-color) 80%)',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'flex-end',
+              paddingBottom: '20px'
+            }}>
+              <div style={{
+                background: 'var(--card-bg)',
+                border: '1px solid var(--primary-color)',
+                padding: '24px 32px',
+                borderRadius: '16px',
+                textAlign: 'center',
+                boxShadow: '0 10px 30px rgba(0,0,0,0.2)',
+                zIndex: 10
+              }}>
+                <h3 style={{ fontSize: '1.4rem', marginBottom: '8px' }}>This content is for Premium members only</h3>
+                <p style={{ color: 'var(--text-muted)', marginBottom: '20px' }}>Subscribe to unlock unlimited access to all articles.</p>
+                <Link href="/pricing" style={{
+                  padding: '12px 24px',
+                  background: 'var(--primary-color)',
+                  color: '#fff',
+                  borderRadius: '8px',
+                  fontWeight: 'bold',
+                  textDecoration: 'none'
+                }}>
+                  View Pricing Plans
+                </Link>
+              </div>
+            </div>
+          )}
+        </div>
         
 
         {/* <div className="support-message">

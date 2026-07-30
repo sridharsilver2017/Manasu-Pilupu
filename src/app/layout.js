@@ -9,6 +9,7 @@ import PwaRegistry from "@/components/PwaRegistry";
 import PushNotificationManager from "@/components/PushNotificationManager";
 import TrialPopup from "@/components/TrialPopup";
 import MaintenanceChecker from "@/components/MaintenanceChecker";
+import { AuthProvider } from "@/context/AuthContext";
 
 const ramabhadra = Ramabhadra({ 
   weight: "400", 
@@ -56,12 +57,13 @@ export default function RootLayout({ children }) {
   return (
     <html lang="te" className={`${ramabhadra.variable} ${mandali.variable}`} suppressHydrationWarning>
       <body suppressHydrationWarning>
-        <MaintenanceChecker>
-          <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
-          <PwaRegistry />
-          <PushNotificationManager />
-          <TrialPopup />
-          <div className="container">
+        <AuthProvider>
+          <MaintenanceChecker>
+            <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
+            <PwaRegistry />
+            <PushNotificationManager />
+            <TrialPopup />
+            <div className="container">
             <header className="site-header">
               <Link href="/" className="logo" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                 <span className="logo-text">మనసు పిలుపు</span>
@@ -127,10 +129,10 @@ export default function RootLayout({ children }) {
             </nav>
 
           </div>
-        </ThemeProvider>
-        </MaintenanceChecker>
+          </ThemeProvider>
+          </MaintenanceChecker>
+        </AuthProvider>
       </body>
     </html>
   );
 }
-
