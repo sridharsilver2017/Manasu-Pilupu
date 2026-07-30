@@ -55,17 +55,15 @@ export default function MaintenanceChecker({ children }) {
   // If maintenance is true, show maintenance screen (unless on admin page)
   if (isMaintenance && pathname !== '/admin') {
     return (
-      <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', textAlign: 'center', padding: '20px', backgroundColor: 'var(--bg-color)' }}>
-          <div style={{ maxWidth: '600px', background: 'var(--card-bg)', padding: '40px', borderRadius: '16px', boxShadow: '0 10px 30px rgba(0,0,0,0.1)' }}>
-            <h1 style={{ fontSize: '2.5rem', marginBottom: '20px', color: 'var(--primary-color)' }}>మనసు పిలుపు</h1>
-            <h2 style={{ fontSize: '1.8rem', marginBottom: '15px' }}>వెబ్‌సైట్ నిర్వహణలో ఉంది <br/>(Under Maintenance)</h2>
-            <p style={{ fontSize: '1.1rem', color: 'var(--text-secondary)', lineHeight: '1.6' }}>
-              మేము వెబ్‌సైట్‌ను మరింత మెరుగుపరుస్తున్నాము. మరింత మంచి అనుభవాన్ని అందించడానికి మా బృందం పనిచేస్తోంది. దయచేసి కొద్దిసేపటి తర్వాత మళ్ళీ ప్రయత్నించండి.
-            </p>
-          </div>
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', textAlign: 'center', padding: '20px', backgroundColor: '#0f172a' }}>
+        <div style={{ maxWidth: '600px', background: 'rgba(30, 41, 59, 0.5)', padding: '40px', borderRadius: '16px', boxShadow: '0 10px 30px rgba(0,0,0,0.5)', border: '1px solid rgba(255, 255, 255, 0.08)' }}>
+          <h1 style={{ fontSize: '2.5rem', marginBottom: '20px', color: '#818cf8' }}>మనసు పిలుపు</h1>
+          <h2 style={{ fontSize: '1.8rem', marginBottom: '15px', color: '#f8fafc' }}>వెబ్‌సైట్ నిర్వహణలో ఉంది <br/>(Under Maintenance)</h2>
+          <p style={{ fontSize: '1.1rem', color: '#94a3b8', lineHeight: '1.6' }}>
+            మేము వెబ్‌సైట్‌ను మరింత మెరుగుపరుస్తున్నాము. మరింత మంచి అనుభవాన్ని అందించడానికి మా బృందం పనిచేస్తోంది. దయచేసి కొద్దిసేపటి తర్వాత మళ్ళీ ప్రయత్నించండి.
+          </p>
         </div>
-      </ThemeProvider>
+      </div>
     );
   }
 
