@@ -24,10 +24,14 @@ export default function MaintenanceChecker({ children }) {
         const res = await fetch(`${WP_API_BASE_URL}/status`, { cache: 'no-store' });
         if (res.ok) {
           const data = await res.json();
-          setIsMaintenance(data.isMaintenance);
+          // Force maintenance to true if API fails or as a hard override
+          setIsMaintenance(true);
+        } else {
+          setIsMaintenance(true);
         }
       } catch (err) {
         console.error("Failed to fetch maintenance status", err);
+        setIsMaintenance(true);
       } finally {
         setIsLoading(false);
       }
@@ -36,6 +40,7 @@ export default function MaintenanceChecker({ children }) {
     if (WP_API_BASE_URL && WP_API_BASE_URL.includes('http')) {
       checkMaintenanceStatus();
     } else {
+      setIsMaintenance(true);
       setIsLoading(false);
     }
   }, [pathname]);
