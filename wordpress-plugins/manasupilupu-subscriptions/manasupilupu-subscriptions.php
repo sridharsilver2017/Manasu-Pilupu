@@ -11,11 +11,8 @@ if (!defined('ABSPATH')) {
 }
 
 // ---------------------------------------------------------
-// CONFIGURATION: Replace these with your actual Razorpay keys
+// CONFIGURATION: Cashfree & JWT
 // ---------------------------------------------------------
-define('MP_RAZORPAY_KEY_ID', 'rzp_test_YOUR_KEY_HERE');
-define('MP_RAZORPAY_KEY_SECRET', 'YOUR_SECRET_HERE');
-define('MP_RAZORPAY_PLAN_ID', 'plan_YOUR_PLAN_ID'); // Create this in Razorpay Dashboard -> Subscriptions -> Plans
 define('MP_JWT_SECRET', 'YOUR_SUPER_SECRET_JWT_KEY_MAKE_IT_LONG');
 
 // ---------------------------------------------------------
@@ -86,12 +83,7 @@ add_action('rest_api_init', function () {
         'permission_callback' => '__return_true'
     ));
 
-    // Razorpay
-    register_rest_route('mp-subs/v1', '/create-subscription', array(
-        'methods' => 'POST',
-        'callback' => 'mp_subs_create_subscription',
-        'permission_callback' => '__return_true'
-    ));
+    // Cashfree Webhook
     register_rest_route('mp-subs/v1', '/webhook', array(
         'methods' => 'POST',
         'callback' => 'mp_subs_webhook',
@@ -151,69 +143,39 @@ function mp_subs_register($request) {
     return rest_ensure_response(array('token' => $token, 'user' => array('id' => $user_id, 'username' => $username)));
 }
 
-// ME (Check Status)
 function mp_subs_get_me($request) {
     $user = mp_subs_get_user_from_request($request);
     if (!$user) return new WP_Error('unauthorized', 'Invalid token', array('status' => 401));
-    $is_premium = get_user_meta($user->ID, 'is_premium', true);
-    return rest_ensure_response(array('id' => $user->ID, 'username' => $user->user_login, 'is_premium' => $is_premium === 'true'));
-}
-
-// CREATE RAZORPAY SUBSCRIPTION
-function mp_subs_create_subscription($request) {
-    $user = mp_subs_get_user_from_request($request);
-    if (!$user) return new WP_Error('unauthorized', 'Please login to subscribe', array('status' => 401));
-
-    $args = array(
-        'plan_id' => MP_RAZORPAY_PLAN_ID,
-        'total_count' => 120, // 10 years
-        'customer_notify' => 1,
-        'notes' => array('user_id' => $user->ID)
-    );
-
-    $ch = curl_init('https://api.razorpay.com/v1/subscriptions');
-    curl_setopt($ch, CURLOPT_USERPWD, MP_RAZORPAY_KEY_ID . ':' . MP_RAZORPAY_KEY_SECRET);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_POST, true);
-    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($args));
-    curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
+    $is_premium = get_user_meta($user->ID, 'is_premium', true) === 'true';
     
-    $response = curl_exec($ch);
-    $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-    curl_close($ch);
-
-    $data = json_decode($response, true);
-    if ($httpcode >= 400) {
-        return new WP_Error('razorpay_error', $data['error']['description'] ?? 'Razorpay API Error', array('status' => 500));
+    $allowed_roles = array('administrator', 'editor', 'author', 'contributor', 'standard');
+    if (!$is_premium && !empty(array_intersect($allowed_roles, (array)$user->roles))) {
+        $is_premium = true;
     }
-
-    return rest_ensure_response(array('subscription_id' => $data['id'], 'key_id' => MP_RAZORPAY_KEY_ID));
+    
+    return rest_ensure_response(array('id' => $user->ID, 'username' => $user->user_login, 'is_premium' => $is_premium));
 }
 
-// WEBHOOK
+// WEBHOOK (Cashfree)
 function mp_subs_webhook($request) {
     $body = $request->get_body();
-    $signature = $request->get_header('x-razorpay-signature');
+    // Verify signature logic should be implemented here in production
     
-    // Verify signature (skipping strict check for this POC, but in prod you MUST verify)
-    // $expected = hash_hmac('sha256', $body, MP_RAZORPAY_WEBHOOK_SECRET);
-
     $data = json_decode($body, true);
-    if (isset($data['event'])) {
-        $event = $data['event'];
-        if ($event === 'subscription.charged' || $event === 'subscription.activated') {
-            $sub = $data['payload']['subscription']['entity'];
-            if (isset($sub['notes']['user_id'])) {
-                $user_id = $sub['notes']['user_id'];
-                update_user_meta($user_id, 'is_premium', 'true');
-                update_user_meta($user_id, 'razorpay_sub_id', $sub['id']);
+    if (isset($data['type'])) {
+        $event = $data['type'];
+        
+        if ($event === 'PAYMENT_SUCCESS_WEBHOOK') {
+            $customer_details = $data['data']['customer_details'] ?? null;
+            if ($customer_details && isset($customer_details['customer_id'])) {
+                $user_id = intval($customer_details['customer_id']);
+                if ($user_id > 0) {
+                    update_user_meta($user_id, 'is_premium', 'true');
+                    update_user_meta($user_id, 'cashfree_order_id', $data['data']['order']['order_id'] ?? '');
+                }
             }
-        } elseif ($event === 'subscription.halted' || $event === 'subscription.cancelled') {
-            $sub = $data['payload']['subscription']['entity'];
-            if (isset($sub['notes']['user_id'])) {
-                $user_id = $sub['notes']['user_id'];
-                update_user_meta($user_id, 'is_premium', 'false');
-            }
+        } elseif ($event === 'PAYMENT_FAILED_WEBHOOK') {
+            // Optional: Handle failure
         }
     }
     return rest_ensure_response(array('status' => 'ok'));
@@ -233,6 +195,12 @@ function mp_subs_protect_post_content($response, $post, $request) {
     
     if ($user) {
         $is_premium = get_user_meta($user->ID, 'is_premium', true) === 'true';
+        
+        // Allow higher roles to bypass the lock
+        $allowed_roles = array('administrator', 'editor', 'author', 'contributor', 'standard');
+        if (!$is_premium && !empty(array_intersect($allowed_roles, (array)$user->roles))) {
+            $is_premium = true;
+        }
     }
 
     // Only protect full single post requests, not list views
@@ -242,11 +210,11 @@ function mp_subs_protect_post_content($response, $post, $request) {
         $content = $post->post_content;
         $paragraphs = explode("</p>", $content);
         $teaser = "";
-        if (count($paragraphs) > 0) {
-            $teaser .= $paragraphs[0] . "</p>";
-        }
-        if (count($paragraphs) > 1) {
-            $teaser .= $paragraphs[1] . "</p>";
+        $limit = min(4, count($paragraphs));
+        for ($i = 0; $i < $limit; $i++) {
+            if (trim($paragraphs[$i]) !== "") {
+                $teaser .= $paragraphs[$i] . "</p>";
+            }
         }
         $teaser .= '<div class="premium-locked"></div>';
         

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import RazorpayCheckout from '@/components/RazorpayCheckout';
+import CashfreeCheckout from '@/components/CashfreeCheckout';
 import { useAuth } from '@/context/AuthContext';
 import { Check, Star, LogIn, UserPlus } from 'lucide-react';
 import Link from 'next/link';
@@ -180,7 +180,7 @@ export default function PricingPage() {
           </ul>
 
           <div style={{ display: 'flex', justifyContent: 'center' }}>
-            <RazorpayCheckout buttonText="Subscribe for ₹99/month" />
+            <CashfreeCheckout buttonText="Subscribe for ₹99/month" />
           </div>
         </div>
       )}

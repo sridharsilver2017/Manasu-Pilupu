@@ -111,6 +111,16 @@ export default function PostClient({ initialSlug, initialPost, initialAllPosts =
     });
   }
 
+  const isLocked = !user || !user.is_premium;
+
+  if (isLocked && postContent) {
+    const paragraphs = postContent.split('</p>');
+    // Show first 4 paragraphs before paywall
+    if (paragraphs.length > 4) {
+      postContent = paragraphs.slice(0, 4).join('</p>') + '</p>';
+    }
+  }
+
   return (
     <article className="single-post animate-fade-in">
       <div className="post-container">
@@ -181,40 +191,77 @@ export default function PostClient({ initialSlug, initialPost, initialAllPosts =
         >
           <div dangerouslySetInnerHTML={{ __html: postContent }} />
           
-          {post.is_locked && (
+          {isLocked && (
             <div style={{
-              position: 'absolute',
-              bottom: 0,
-              left: 0,
-              right: 0,
-              height: '300px',
-              background: 'linear-gradient(to bottom, transparent, var(--bg-color) 80%)',
+              position: 'relative',
+              marginTop: '-200px',
+              paddingTop: '200px',
+              background: 'linear-gradient(to bottom, transparent 0%, var(--bg-color) 60%, var(--bg-color) 100%)',
               display: 'flex',
               flexDirection: 'column',
               alignItems: 'center',
-              justifyContent: 'flex-end',
-              paddingBottom: '20px'
+              justifyContent: 'center',
+              paddingBottom: '60px',
+              zIndex: 5
             }}>
               <div style={{
-                background: 'var(--card-bg)',
-                border: '1px solid var(--primary-color)',
-                padding: '24px 32px',
-                borderRadius: '16px',
+                background: 'var(--glass-bg)',
+                backdropFilter: 'blur(20px)',
+                WebkitBackdropFilter: 'blur(20px)',
+                border: '1px solid var(--glass-border)',
+                padding: '40px 48px',
+                borderRadius: '24px',
                 textAlign: 'center',
-                boxShadow: '0 10px 30px rgba(0,0,0,0.2)',
-                zIndex: 10
+                boxShadow: 'var(--shadow-lg), 0 0 0 1px inset rgba(255,255,255,0.1)',
+                zIndex: 10,
+                maxWidth: '500px',
+                width: '90%',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
               }}>
-                <h3 style={{ fontSize: '1.4rem', marginBottom: '8px' }}>This content is for Premium members only</h3>
-                <p style={{ color: 'var(--text-muted)', marginBottom: '20px' }}>Subscribe to unlock unlimited access to all articles.</p>
-                <Link href="/pricing" style={{
-                  padding: '12px 24px',
-                  background: 'var(--primary-color)',
-                  color: '#fff',
-                  borderRadius: '8px',
-                  fontWeight: 'bold',
-                  textDecoration: 'none'
+                <div style={{
+                  width: '64px',
+                  height: '64px',
+                  borderRadius: '50%',
+                  background: 'linear-gradient(135deg, var(--primary-color), var(--primary-hover))',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  marginBottom: '24px',
+                  boxShadow: '0 10px 25px rgba(79, 70, 229, 0.4)'
                 }}>
-                  View Pricing Plans
+                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                  </svg>
+                </div>
+                <h3 style={{ 
+                  fontSize: '1.6rem', 
+                  marginBottom: '12px', 
+                  fontWeight: '700', 
+                  background: 'linear-gradient(135deg, var(--text-color), var(--primary-color))', 
+                  WebkitBackgroundClip: 'text', 
+                  WebkitTextFillColor: 'transparent' 
+                }}>
+                  ఈ కంటెంట్ కేవలం ప్రీమియం సభ్యుల కోసం మాత్రమే
+                </h3>
+                <p style={{ color: 'var(--text-muted)', marginBottom: '32px', fontSize: '1.05rem', lineHeight: '1.6' }}>
+                  అన్ని ఆర్టికల్స్‌ను అపరిమితంగా చదవడానికి సబ్‌స్క్రైబ్ చేసుకోండి.
+                </p>
+                <Link href="/pricing" style={{
+                  padding: '16px 36px',
+                  background: 'linear-gradient(135deg, var(--primary-color), var(--primary-hover))',
+                  color: '#fff',
+                  borderRadius: '12px',
+                  fontWeight: 'bold',
+                  fontSize: '1.1rem',
+                  textDecoration: 'none',
+                  boxShadow: '0 8px 20px rgba(79, 70, 229, 0.3)',
+                  transition: 'all 0.3s ease',
+                  display: 'inline-block'
+                }}>
+                  ధరల ప్లాన్‌లను చూడండి
                 </Link>
               </div>
             </div>
@@ -232,8 +279,6 @@ export default function PostClient({ initialSlug, initialPost, initialAllPosts =
             </Link>
           </div>
         </div> */}
-
-        <AppDownloadButton style={{ marginTop: '30px' }} />
 
         {(prevPost || nextPost) && (
           (() => {
@@ -268,6 +313,8 @@ export default function PostClient({ initialSlug, initialPost, initialAllPosts =
             <span style={{ fontWeight: 'bold' }}>గమనిక:</span> AI నా రచయిత కాదు… నా వేగాన్ని పెంచే సహాయకుడు మాత్రమే. ఆలోచన నాది. భావం నాది. చివరకు సరిదిద్దుకునేదీ (ఎడిట్ చేసేదీ) నేనే. ఈ మిషన్కి నేనే స్వయంగా శిక్షణ ఇచ్చాను… అందుకే ఇది నా శైలిలోనే మాట్లాడుతోంది. 😄
           </p>
         </div>
+
+        <AppDownloadButton style={{ marginTop: '30px', marginBottom: '20px' }} />
       </div>
     </article>
   );

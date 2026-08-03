@@ -71,16 +71,19 @@ export default function RootLayout({ children }) {
               <nav className="site-nav hide-on-mobile">
                 <ThemeToggle />
                 <Link href="/" className="nav-link">
-                  హోమ్
+                  Home
                 </Link>
                 <Link href="/blog" className="nav-link">
-                  బ్లాగ్
+                  Blog
                 </Link>
                 <Link href="/categories" className="nav-link">
-                  విభాగాలు
+                  Categories
                 </Link>
                 <Link href="/contact" className="nav-link">
-                  సంప్రదించండి
+                  Contact
+                </Link>
+                <Link href="/profile" className="nav-link">
+                  Profile
                 </Link>
                 {/* <Link href="/support" className="support-nav-btn">
                   నన్ను సపోర్ట్ చేయండి
@@ -104,19 +107,23 @@ export default function RootLayout({ children }) {
             <nav className="mobile-bottom-nav hide-on-desktop">
               <Link href="/" className="mobile-nav-item">
                 <Home />
-                <span>హోమ్</span>
+                <span>Home</span>
               </Link>
               <Link href="/blog" className="mobile-nav-item">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
-                <span>బ్లాగ్</span>
+                <span>Blog</span>
               </Link>
               <Link href="/categories" className="mobile-nav-item">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
-                <span>విభాగాలు</span>
+                <span>Categories</span>
               </Link>
               <Link href="/contact" className="mobile-nav-item">
                 <Phone />
-                <span>సంప్రదించండి</span>
+                <span>Contact</span>
+              </Link>
+              <Link href="/profile" className="mobile-nav-item">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                <span>Profile</span>
               </Link>
               {/* <Link href="/support" className="mobile-nav-item">
                 <Heart />
@@ -124,7 +131,7 @@ export default function RootLayout({ children }) {
               </Link> */}
               <div className="mobile-nav-item">
                 <ThemeToggle />
-                <span>థీమ్</span>
+                <span>Theme</span>
               </div>
             </nav>
 
