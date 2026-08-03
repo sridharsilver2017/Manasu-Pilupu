@@ -8,6 +8,7 @@ import ShareButtons from './ShareButtons';
 import Comments from './Comments';
 import GoogleTranslate from '@/components/GoogleTranslate';
 import AppDownloadButton from '@/components/AppDownloadButton';
+import CashfreeCheckout from '@/components/CashfreeCheckout';
 import LikeButton from '../../components/LikeButton';
 
 function decodeHtmlEntities(text) {
@@ -249,20 +250,9 @@ export default function PostClient({ initialSlug, initialPost, initialAllPosts =
                 <p style={{ color: 'var(--text-muted)', marginBottom: '32px', fontSize: '1.05rem', lineHeight: '1.6' }}>
                   అన్ని ఆర్టికల్స్‌ను అపరిమితంగా చదవడానికి సబ్‌స్క్రైబ్ చేసుకోండి.
                 </p>
-                <Link href="/pricing" style={{
-                  padding: '16px 36px',
-                  background: 'linear-gradient(135deg, var(--primary-color), var(--primary-hover))',
-                  color: '#fff',
-                  borderRadius: '12px',
-                  fontWeight: 'bold',
-                  fontSize: '1.1rem',
-                  textDecoration: 'none',
-                  boxShadow: '0 8px 20px rgba(79, 70, 229, 0.3)',
-                  transition: 'all 0.3s ease',
-                  display: 'inline-block'
-                }}>
-                  ధరల ప్లాన్‌లను చూడండి
-                </Link>
+                <div style={{ display: 'inline-block' }}>
+                  <CashfreeCheckout buttonText="Subscribe Now" />
+                </div>
               </div>
             </div>
           )}
