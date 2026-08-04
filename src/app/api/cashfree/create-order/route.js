@@ -3,9 +3,10 @@ import { NextResponse } from 'next/server';
 export async function POST(req) {
   try {
     const body = await req.json();
-    const { username, email, id } = body;
+    const { username, email, id, amount } = body;
 
     const orderId = `ORDER_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
+    const orderAmount = amount || 99.00;
     
     // We are using the Sandbox (Test) URL
     const CASHFREE_API_URL = 'https://sandbox.cashfree.com/pg/orders';
@@ -19,7 +20,7 @@ export async function POST(req) {
         'x-api-version': '2023-08-01'
       },
       body: JSON.stringify({
-        order_amount: 99.00,
+        order_amount: parseFloat(orderAmount),
         order_currency: 'INR',
         order_id: orderId,
         customer_details: {

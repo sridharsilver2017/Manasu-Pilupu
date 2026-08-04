@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { load } from '@cashfreepayments/cashfree-js';
 
-export default function CashfreeCheckout({ buttonText, onSuccess }) {
+export default function CashfreeCheckout({ buttonText, onSuccess, amount = 99 }) {
   const { user, verifyToken } = useAuth();
   const [loading, setLoading] = useState(false);
 
@@ -26,7 +26,8 @@ export default function CashfreeCheckout({ buttonText, onSuccess }) {
         body: JSON.stringify({
           username: user.username,
           email: user.email || `${user.username}@example.com`,
-          id: user.id
+          id: user.id,
+          amount: amount
         })
       });
       const subscriptionData = await subscriptionRes.json();

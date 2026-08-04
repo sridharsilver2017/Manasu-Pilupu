@@ -4,7 +4,6 @@ import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import Link from 'next/link';
-import CashfreeCheckout from '@/components/CashfreeCheckout';
 
 export default function ProfilePage() {
   const { user, loading, logout } = useAuth();
@@ -113,9 +112,19 @@ export default function ProfilePage() {
             <p style={{ color: 'var(--text-muted)', marginBottom: '20px', fontSize: '0.95rem' }}>
               Unlock unlimited access to all articles and support our work!
             </p>
-            <div style={{ display: 'inline-block' }}>
-              <CashfreeCheckout buttonText="Subscribe Now" />
-            </div>
+            <Link href="/premium" style={{
+              display: 'inline-block',
+              padding: '12px 28px',
+              background: 'linear-gradient(135deg, var(--primary-color), var(--primary-hover))',
+              color: '#fff',
+              borderRadius: '10px',
+              fontWeight: 'bold',
+              textDecoration: 'none',
+              boxShadow: '0 8px 20px rgba(79, 70, 229, 0.3)',
+              transition: 'all 0.3s ease'
+            }}>
+              Unlock Premium
+            </Link>
           </div>
         )}
 
