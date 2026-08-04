@@ -7,11 +7,20 @@ import { load } from '@cashfreepayments/cashfree-js';
 export default function CashfreeCheckout({ buttonText, onSuccess, amount = 99 }) {
   const { user, verifyToken } = useAuth();
   const [loading, setLoading] = useState(false);
+  const [showGuestForm, setShowGuestForm] = useState(false);
+  const [guestName, setGuestName] = useState('');
+  const [guestEmail, setGuestEmail] = useState('');
 
   const displayCashfree = async () => {
     if (!user) {
-      alert("Please login first to subscribe.");
-      return;
+      if (!showGuestForm) {
+        setShowGuestForm(true);
+        return;
+      }
+      if (!guestName || !guestEmail) {
+        alert("Please enter your name and email to proceed.");
+        return;
+      }
     }
 
     setLoading(true);
@@ -24,9 +33,9 @@ export default function CashfreeCheckout({ buttonText, onSuccess, amount = 99 })
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          username: user.username,
-          email: user.email || `${user.username}@example.com`,
-          id: user.id,
+          username: user ? user.username : guestName,
+          email: user ? (user.email || `${user.username}@example.com`) : guestEmail,
+          id: user ? user.id : 'GUEST',
           amount: amount
         })
       });
@@ -58,8 +67,10 @@ export default function CashfreeCheckout({ buttonText, onSuccess, amount = 99 })
         
         if (result.paymentDetails) {
           console.log("Payment completed:", result.paymentDetails.paymentMessage);
-          alert(`Payment successful! Welcome to Premium.`);
-          await verifyToken(user.token); // Refresh user status
+          alert(`Payment successful! Welcome to Premium. Check your email for login details.`);
+          if (user) {
+            await verifyToken(user.token); // Refresh user status
+          }
           if (onSuccess) onSuccess();
         }
       });
@@ -71,6 +82,60 @@ export default function CashfreeCheckout({ buttonText, onSuccess, amount = 99 })
       setLoading(false);
     }
   };
+
+  if (showGuestForm && !user) {
+    return (
+      <div style={{
+        background: 'var(--glass-bg)',
+        border: '1px solid var(--glass-border)',
+        padding: '24px',
+        borderRadius: '16px',
+        textAlign: 'left',
+        marginTop: '20px'
+      }}>
+        <h4 style={{ marginBottom: '16px', fontSize: '1.1rem' }}>Enter details to subscribe</h4>
+        <input 
+          type="text" 
+          placeholder="Full Name" 
+          value={guestName}
+          onChange={(e) => setGuestName(e.target.value)}
+          style={{ width: '100%', padding: '12px', marginBottom: '12px', borderRadius: '8px', border: '1px solid var(--border-color)', background: 'var(--bg-color)', color: 'var(--text-color)' }}
+        />
+        <input 
+          type="email" 
+          placeholder="Email Address" 
+          value={guestEmail}
+          onChange={(e) => setGuestEmail(e.target.value)}
+          style={{ width: '100%', padding: '12px', marginBottom: '16px', borderRadius: '8px', border: '1px solid var(--border-color)', background: 'var(--bg-color)', color: 'var(--text-color)' }}
+        />
+        <div style={{ display: 'flex', gap: '10px' }}>
+          <button 
+            onClick={() => setShowGuestForm(false)}
+            style={{ padding: '12px 20px', background: 'transparent', border: '1px solid var(--text-muted)', color: 'var(--text-color)', borderRadius: '8px', cursor: 'pointer' }}
+          >
+            Cancel
+          </button>
+          <button 
+            onClick={displayCashfree}
+            disabled={loading}
+            style={{
+              padding: '12px 24px',
+              background: 'linear-gradient(135deg, var(--primary-color), #c084fc)',
+              color: '#fff',
+              border: 'none',
+              borderRadius: '8px',
+              fontWeight: 'bold',
+              cursor: loading ? 'not-allowed' : 'pointer',
+              opacity: loading ? 0.7 : 1,
+              flex: 1
+            }}
+          >
+            {loading ? 'Processing...' : 'Proceed to Payment'}
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <button

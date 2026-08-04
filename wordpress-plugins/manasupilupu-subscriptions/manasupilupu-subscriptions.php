@@ -167,11 +167,35 @@ function mp_subs_webhook($request) {
         
         if ($event === 'PAYMENT_SUCCESS_WEBHOOK') {
             $customer_details = $data['data']['customer_details'] ?? null;
-            if ($customer_details && isset($customer_details['customer_id'])) {
-                $user_id = intval($customer_details['customer_id']);
-                if ($user_id > 0) {
-                    update_user_meta($user_id, 'is_premium', 'true');
-                    update_user_meta($user_id, 'cashfree_order_id', $data['data']['order']['order_id'] ?? '');
+            if ($customer_details && isset($customer_details['customer_email'])) {
+                $email = sanitize_email($customer_details['customer_email']);
+                $name = sanitize_text_field($customer_details['customer_name'] ?? '');
+                
+                $user = get_user_by('email', $email);
+                
+                if ($user) {
+                    // User exists, just upgrade
+                    update_user_meta($user->ID, 'is_premium', 'true');
+                    update_user_meta($user->ID, 'cashfree_order_id', $data['data']['order']['order_id'] ?? '');
+                } else {
+                    // User does not exist, create account
+                    $username = sanitize_user(explode('@', $email)[0]);
+                    if (username_exists($username)) {
+                        $username = $username . wp_rand(1000, 9999);
+                    }
+                    
+                    $password = wp_generate_password(12, false);
+                    $user_id = wp_create_user($username, $password, $email);
+                    
+                    if (!is_wp_error($user_id)) {
+                        update_user_meta($user_id, 'is_premium', 'true');
+                        update_user_meta($user_id, 'cashfree_order_id', $data['data']['order']['order_id'] ?? '');
+                        
+                        // Send welcome email
+                        $subject = 'Welcome to Manasu Pilupu Premium!';
+                        $message = "Hello $name,\n\nThank you for subscribing to Premium!\n\nAn account has been automatically created for you.\nHere are your login details:\nUsername: $username\nPassword: $password\n\nPlease log in on our website to access your premium content.\n\nEnjoy unlimited reading!";
+                        wp_mail($email, $subject, $message);
+                    }
                 }
             }
         } elseif ($event === 'PAYMENT_FAILED_WEBHOOK') {

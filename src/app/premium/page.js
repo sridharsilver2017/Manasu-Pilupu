@@ -150,25 +150,11 @@ export default function PremiumPage() {
               }}>
                 You are already a Premium Member!
               </div>
-            ) : user ? (
+            ) : (
               <CashfreeCheckout 
                 buttonText={`Subscribe for ₹${isYearly ? yearlyPrice : monthlyPrice}`} 
                 amount={isYearly ? yearlyPrice : monthlyPrice} 
               />
-            ) : (
-              <Link href="/login?redirect=/premium" style={{
-                display: 'inline-block',
-                padding: '16px 32px',
-                background: 'linear-gradient(135deg, var(--primary-color), var(--primary-hover))',
-                color: '#fff',
-                borderRadius: '12px',
-                fontWeight: 'bold',
-                fontSize: '1.1rem',
-                textDecoration: 'none',
-                boxShadow: '0 10px 20px rgba(79, 70, 229, 0.3)'
-              }}>
-                Login to Subscribe
-              </Link>
             )}
           </div>
 

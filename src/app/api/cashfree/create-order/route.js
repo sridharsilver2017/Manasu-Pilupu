@@ -24,7 +24,7 @@ export async function POST(req) {
         order_currency: 'INR',
         order_id: orderId,
         customer_details: {
-          customer_id: id ? String(id) : 'CUST_DEFAULT',
+          customer_id: (!id || id === 'GUEST') ? `GUEST_${Date.now()}` : String(id),
           customer_name: username || 'Premium User',
           customer_email: email || 'user@example.com',
           customer_phone: '9999999999' // Cashfree requires a valid phone number format
