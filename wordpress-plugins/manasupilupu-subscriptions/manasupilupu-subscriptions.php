@@ -237,8 +237,9 @@ function mp_subs_protect_post_content($response, $post, $request) {
         }
     }
 
-    // Check if the post is marked as premium
-    $is_premium_post = get_post_meta($post->ID, 'is_premium_post', true) === 'yes';
+    // Check if the post is marked as free. If it's NOT marked as 'yes' (free), it defaults to premium.
+    $is_free_post = get_post_meta($post->ID, 'is_free_post', true) === 'yes';
+    $is_premium_post = !$is_free_post;
 
     // Only protect full single post requests, not list views
     // Wait, let's protect the content field.
@@ -326,48 +327,43 @@ function mp_subs_create_order($request) {
 }
 
 // ---------------------------------------------------------
-// ADD META BOX FOR PREMIUM CONTENT
+// ADD META BOX FOR FREE CONTENT
 // ---------------------------------------------------------
-add_action('add_meta_boxes', 'mp_subs_add_premium_meta_box');
-function mp_subs_add_premium_meta_box() {
+add_action('add_meta_boxes', 'mp_subs_add_free_meta_box');
+function mp_subs_add_free_meta_box() {
     add_meta_box(
-        'mp_subs_premium_box',
-        'Premium Content Setting',
-        'mp_subs_premium_meta_box_html',
+        'mp_subs_free_box',
+        'Free Content Setting',
+        'mp_subs_free_meta_box_html',
         'post',
         'side',
         'default'
     );
 }
 
-function mp_subs_premium_meta_box_html($post) {
-    $value = get_post_meta($post->ID, 'is_premium_post', true);
-    // By default, if not set, we can make it premium if needed, but let's default to no (free).
-    // The previous behavior was all posts are premium, so let's default new posts to no, but existing ones to 'yes' if we wanted backward compatibility.
-    // For now, let's just use the saved value.
+function mp_subs_free_meta_box_html($post) {
+    $value = get_post_meta($post->ID, 'is_free_post', true);
     $checked = ($value === 'yes') ? 'checked' : '';
     ?>
-    <label for="mp_subs_is_premium_post">
-        <input type="checkbox" name="mp_subs_is_premium_post" id="mp_subs_is_premium_post" value="yes" <?php echo $checked; ?>>
-        Require Premium Subscription to read this post.
+    <label for="mp_subs_is_free_post">
+        <input type="checkbox" name="mp_subs_is_free_post" id="mp_subs_is_free_post" value="yes" <?php echo $checked; ?>>
+        Make this post FREE (no subscription required). By default, all posts are Premium.
     </label>
     <?php
 }
 
-add_action('save_post', 'mp_subs_save_premium_meta_box');
-function mp_subs_save_premium_meta_box($post_id) {
-    if (array_key_exists('mp_subs_is_premium_post', $_POST)) {
+add_action('save_post', 'mp_subs_save_free_meta_box');
+function mp_subs_save_free_meta_box($post_id) {
+    if (array_key_exists('mp_subs_is_free_post', $_POST)) {
         update_post_meta(
             $post_id,
-            'is_premium_post',
-            $_POST['mp_subs_is_premium_post']
+            'is_free_post',
+            $_POST['mp_subs_is_free_post']
         );
     } else {
-        // If it's not present (e.g. checkbox unchecked), delete or update to 'no'
-        // But only if it's a valid save (not autosave etc)
         if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) return;
         if (!current_user_can('edit_post', $post_id)) return;
         
-        update_post_meta($post_id, 'is_premium_post', 'no');
+        update_post_meta($post_id, 'is_free_post', 'no');
     }
 }
