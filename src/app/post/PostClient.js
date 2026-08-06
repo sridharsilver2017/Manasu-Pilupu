@@ -111,7 +111,7 @@ export default function PostClient({ initialSlug, initialPost, initialAllPosts =
     });
   }
 
-  const isLocked = !user || !user.is_premium;
+  const isLocked = post.is_locked;
 
   if (isLocked && postContent) {
     const paragraphs = postContent.split('</p>');

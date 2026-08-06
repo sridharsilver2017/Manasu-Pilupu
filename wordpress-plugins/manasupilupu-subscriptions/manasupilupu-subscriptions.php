@@ -14,6 +14,9 @@ if (!defined('ABSPATH')) {
 // CONFIGURATION: Cashfree & JWT
 // ---------------------------------------------------------
 define('MP_JWT_SECRET', 'YOUR_SUPER_SECRET_JWT_KEY_MAKE_IT_LONG');
+define('CASHFREE_APP_ID', 'TEST10460061582c1f17ce01dbe4733516006401');
+define('CASHFREE_SECRET_KEY', 'REPLACE_WITH_YOUR_ACTUAL_SECRET_KEY_IN_PRODUCTION');
+define('CASHFREE_API_URL', 'https://sandbox.cashfree.com/pg/orders');
 
 // ---------------------------------------------------------
 // CORS HANDLING
@@ -87,6 +90,13 @@ add_action('rest_api_init', function () {
     register_rest_route('mp-subs/v1', '/webhook', array(
         'methods' => 'POST',
         'callback' => 'mp_subs_webhook',
+        'permission_callback' => '__return_true'
+    ));
+
+    // Cashfree Create Order
+    register_rest_route('mp-subs/v1', '/create-order', array(
+        'methods' => 'POST',
+        'callback' => 'mp_subs_create_order',
         'permission_callback' => '__return_true'
     ));
 });
@@ -227,9 +237,12 @@ function mp_subs_protect_post_content($response, $post, $request) {
         }
     }
 
+    // Check if the post is marked as premium
+    $is_premium_post = get_post_meta($post->ID, 'is_premium_post', true) === 'yes';
+
     // Only protect full single post requests, not list views
     // Wait, let's protect the content field.
-    if (!$is_premium) {
+    if ($is_premium_post && !$is_premium) {
         // Truncate content to first 2 paragraphs as a teaser
         $content = $post->post_content;
         $paragraphs = explode("</p>", $content);
@@ -249,4 +262,112 @@ function mp_subs_protect_post_content($response, $post, $request) {
     }
 
     return $response;
+}
+
+// ---------------------------------------------------------
+// CREATE CASHFREE ORDER
+// ---------------------------------------------------------
+function mp_subs_create_order($request) {
+    $body = json_decode($request->get_body(), true);
+    
+    $username = $body['username'] ?? 'Premium User';
+    $email = $body['email'] ?? 'user@example.com';
+    $id = $body['id'] ?? 'GUEST';
+    $amount = $body['amount'] ?? 99.00;
+
+    $orderId = 'ORDER_' . time() . '_' . rand(100, 999);
+    
+    $customer_id = (!$id || $id === 'GUEST') ? 'GUEST_' . time() : (string)$id;
+
+    $payload = array(
+        'order_amount' => (float)$amount,
+        'order_currency' => 'INR',
+        'order_id' => $orderId,
+        'customer_details' => array(
+            'customer_id' => $customer_id,
+            'customer_name' => $username,
+            'customer_email' => $email,
+            'customer_phone' => '9999999999'
+        ),
+        'order_meta' => array(
+            'return_url' => 'http://localhost:3000/pricing?status=success'
+        )
+    );
+
+    $args = array(
+        'method'      => 'POST',
+        'headers'     => array(
+            'Content-Type' => 'application/json',
+            'x-client-id' => CASHFREE_APP_ID,
+            'x-client-secret' => CASHFREE_SECRET_KEY,
+            'x-api-version' => '2023-08-01'
+        ),
+        'body'        => json_encode($payload),
+        'data_format' => 'body'
+    );
+
+    $response = wp_remote_post(CASHFREE_API_URL, $args);
+
+    if (is_wp_error($response)) {
+        return new WP_Error('cashfree_error', $response->get_error_message(), array('status' => 500));
+    }
+
+    $response_code = wp_remote_retrieve_response_code($response);
+    $response_body = json_decode(wp_remote_retrieve_body($response), true);
+
+    if ($response_code >= 400) {
+        return new WP_Error('cashfree_error', $response_body['message'] ?? 'Failed to create Cashfree order', array('status' => $response_code));
+    }
+
+    return rest_ensure_response(array(
+        'payment_session_id' => $response_body['payment_session_id'],
+        'order_id' => $response_body['order_id']
+    ));
+}
+
+// ---------------------------------------------------------
+// ADD META BOX FOR PREMIUM CONTENT
+// ---------------------------------------------------------
+add_action('add_meta_boxes', 'mp_subs_add_premium_meta_box');
+function mp_subs_add_premium_meta_box() {
+    add_meta_box(
+        'mp_subs_premium_box',
+        'Premium Content Setting',
+        'mp_subs_premium_meta_box_html',
+        'post',
+        'side',
+        'default'
+    );
+}
+
+function mp_subs_premium_meta_box_html($post) {
+    $value = get_post_meta($post->ID, 'is_premium_post', true);
+    // By default, if not set, we can make it premium if needed, but let's default to no (free).
+    // The previous behavior was all posts are premium, so let's default new posts to no, but existing ones to 'yes' if we wanted backward compatibility.
+    // For now, let's just use the saved value.
+    $checked = ($value === 'yes') ? 'checked' : '';
+    ?>
+    <label for="mp_subs_is_premium_post">
+        <input type="checkbox" name="mp_subs_is_premium_post" id="mp_subs_is_premium_post" value="yes" <?php echo $checked; ?>>
+        Require Premium Subscription to read this post.
+    </label>
+    <?php
+}
+
+add_action('save_post', 'mp_subs_save_premium_meta_box');
+function mp_subs_save_premium_meta_box($post_id) {
+    if (array_key_exists('mp_subs_is_premium_post', $_POST)) {
+        update_post_meta(
+            $post_id,
+            'is_premium_post',
+            $_POST['mp_subs_is_premium_post']
+        );
+    } else {
+        // If it's not present (e.g. checkbox unchecked), delete or update to 'no'
+        // But only if it's a valid save (not autosave etc)
+        if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) return;
+        if (!current_user_can('edit_post', $post_id)) return;
+        
+        update_post_meta($post_id, 'is_premium_post', 'no');
+    }
 }
