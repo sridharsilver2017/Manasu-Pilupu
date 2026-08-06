@@ -10,6 +10,7 @@ import PushNotificationManager from "@/components/PushNotificationManager";
 import TrialPopup from "@/components/TrialPopup";
 import MaintenanceChecker from "@/components/MaintenanceChecker";
 import { AuthProvider } from "@/context/AuthContext";
+import { DesktopAuthLink, MobileAuthLink } from "@/components/AuthLinks";
 
 const ramabhadra = Ramabhadra({ 
   weight: "400", 
@@ -82,9 +83,7 @@ export default function RootLayout({ children }) {
                 <Link href="/contact" className="nav-link">
                   Contact
                 </Link>
-                <Link href="/profile" className="nav-link">
-                  Profile
-                </Link>
+                <DesktopAuthLink />
                 {/* <Link href="/support" className="support-nav-btn">
                   నన్ను సపోర్ట్ చేయండి
                 </Link> */}
@@ -121,10 +120,7 @@ export default function RootLayout({ children }) {
                 <Phone />
                 <span>Contact</span>
               </Link>
-              <Link href="/profile" className="mobile-nav-item">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-                <span>Profile</span>
-              </Link>
+              <MobileAuthLink />
               {/* <Link href="/support" className="mobile-nav-item">
                 <Heart />
                 <span>సపోర్ట్</span>
