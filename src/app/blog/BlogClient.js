@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useEffect } from 'react';
-import { getPaginatedPostsClient, getCachedPaginatedPosts, getAllCategoriesClient } from '@/lib/api-client';
+import { useState, useEffect, useRef } from 'react';
+import { getPaginatedPostsClient, getCachedPaginatedPosts, getAllCategoriesClient, getPostsByCategoryClient } from '@/lib/api-client';
 import PostCard from '@/components/PostCard';
 
 export default function BlogClient({ initialPosts = [], initialTotalPages = 1 }) {
@@ -15,8 +15,41 @@ export default function BlogClient({ initialPosts = [], initialTotalPages = 1 })
   const [activeTab, setActiveTab] = useState('all');
   const [selectedCategory, setSelectedCategory] = useState('');
 
+  const isInitialMount = useRef(true);
+
+  useEffect(() => {
+    async function fetchCategoryPosts() {
+      if (isInitialMount.current && (!selectedCategory || selectedCategory === 'all')) {
+        isInitialMount.current = false;
+        // Skip fetching on first mount if we just want 'all', because we already fetch it below
+        return;
+      }
+      
+      setLoading(true);
+      try {
+        let data;
+        if (selectedCategory && selectedCategory !== 'all') {
+          data = await getPostsByCategoryClient(selectedCategory, 1, 9);
+        } else {
+          data = await getPaginatedPostsClient(1, 9);
+        }
+        setPosts(data.posts);
+        setTotalPages(data.totalPages);
+        setCurrentPage(1);
+      } catch (e) {
+        console.error(e);
+      } finally {
+        setLoading(false);
+      }
+    }
+    
+    fetchCategoryPosts();
+  }, [selectedCategory]);
+
   useEffect(() => {
     async function loadInitialPosts() {
+      if (selectedCategory && selectedCategory !== 'all') return;
+      
       const cached = getCachedPaginatedPosts(1, 9);
       if (cached && cached.posts) {
         setPosts(cached.posts);
@@ -56,7 +89,12 @@ export default function BlogClient({ initialPosts = [], initialTotalPages = 1 })
     setLoadingMore(true);
     try {
       const nextPage = currentPage + 1;
-      const data = await getPaginatedPostsClient(nextPage, 9);
+      let data;
+      if (selectedCategory && selectedCategory !== 'all') {
+        data = await getPostsByCategoryClient(selectedCategory, nextPage, 9);
+      } else {
+        data = await getPaginatedPostsClient(nextPage, 9);
+      }
       setPosts([...posts, ...data.posts]);
       setCurrentPage(nextPage);
     } catch (e) {
@@ -71,13 +109,6 @@ export default function BlogClient({ initialPosts = [], initialTotalPages = 1 })
     if (activeTab === 'free' && post.is_premium_type === true) return false;
     if (activeTab === 'premium' && post.is_premium_type === false) return false;
     
-    // Category dropdown filter
-    if (selectedCategory && selectedCategory !== 'all') {
-      if (!post.categories || !post.categories.includes(parseInt(selectedCategory))) {
-        return false;
-      }
-    }
-    
     return true;
   });
 
@@ -91,22 +122,60 @@ export default function BlogClient({ initialPosts = [], initialTotalPages = 1 })
           </p>
         </div>
 
-        <div className="content-tabs" style={{ display: 'flex', justifyContent: 'center', gap: '15px', marginBottom: '30px', flexWrap: 'wrap' }}>
+        <div className="content-tabs" style={{ 
+          display: 'flex', 
+          justifyContent: 'center',
+          gap: '10px', 
+          background: 'var(--bg-secondary)', 
+          padding: '6px', 
+          borderRadius: '30px',
+          marginBottom: '30px', 
+          flexWrap: 'wrap',
+          maxWidth: 'fit-content',
+          margin: '0 auto 30px auto'
+        }}>
           <button 
-            className={`tab-btn ${activeTab === 'all' ? 'active' : ''}`}
             onClick={() => setActiveTab('all')}
+            style={{
+              padding: '8px 20px',
+              borderRadius: '20px',
+              border: 'none',
+              background: activeTab === 'all' ? 'var(--primary-color)' : 'transparent',
+              color: activeTab === 'all' ? '#fff' : 'var(--text-color)',
+              fontWeight: activeTab === 'all' ? 'bold' : 'normal',
+              cursor: 'pointer',
+              transition: 'all 0.3s ease'
+            }}
           >
             అన్ని (All)
           </button>
           <button 
-            className={`tab-btn ${activeTab === 'free' ? 'active' : ''}`}
             onClick={() => setActiveTab('free')}
+            style={{
+              padding: '8px 20px',
+              borderRadius: '20px',
+              border: 'none',
+              background: activeTab === 'free' ? 'var(--primary-color)' : 'transparent',
+              color: activeTab === 'free' ? '#fff' : 'var(--text-color)',
+              fontWeight: activeTab === 'free' ? 'bold' : 'normal',
+              cursor: 'pointer',
+              transition: 'all 0.3s ease'
+            }}
           >
             ఉచితం (Free)
           </button>
           <button 
-            className={`tab-btn ${activeTab === 'premium' ? 'active' : ''}`}
             onClick={() => setActiveTab('premium')}
+            style={{
+              padding: '8px 20px',
+              borderRadius: '20px',
+              border: 'none',
+              background: activeTab === 'premium' ? 'var(--primary-color)' : 'transparent',
+              color: activeTab === 'premium' ? '#fff' : 'var(--text-color)',
+              fontWeight: activeTab === 'premium' ? 'bold' : 'normal',
+              cursor: 'pointer',
+              transition: 'all 0.3s ease'
+            }}
           >
             ప్రీమియం (Premium)
           </button>
