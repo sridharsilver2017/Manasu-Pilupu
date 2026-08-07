@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { load } from '@cashfreepayments/cashfree-js';
 
-export default function CashfreeCheckout({ buttonText, onSuccess, amount = 99 }) {
+export default function CashfreeCheckout({ buttonText, onSuccess, amount = 99, planId = 'premium_monthly_99' }) {
   const { user, verifyToken } = useAuth();
   const [loading, setLoading] = useState(false);
   const [showGuestForm, setShowGuestForm] = useState(false);
@@ -36,12 +36,13 @@ export default function CashfreeCheckout({ buttonText, onSuccess, amount = 99 })
           username: user ? user.username : guestName,
           email: user ? (user.email || `${user.username}@example.com`) : guestEmail,
           id: user ? user.id : 'GUEST',
-          amount: amount
+          amount: amount,
+          plan_id: planId
         })
       });
       const subscriptionData = await subscriptionRes.json();
 
-      if (!subscriptionRes.ok || !subscriptionData.payment_session_id) {
+      if (!subscriptionRes.ok || !subscriptionData.subscription_session_id) {
         const backendError = subscriptionData.message || subscriptionData.error || 'Failed to create subscription session with Cashfree.';
         alert(`Backend Error: ${backendError}`);
         setLoading(false);
@@ -55,7 +56,7 @@ export default function CashfreeCheckout({ buttonText, onSuccess, amount = 99 })
 
       // 3. Configure Checkout Options
       const checkoutOptions = {
-        paymentSessionId: subscriptionData.payment_session_id,
+        subscriptionSessionId: subscriptionData.subscription_session_id,
         redirectTarget: "_modal", // Open in a modal
       };
 

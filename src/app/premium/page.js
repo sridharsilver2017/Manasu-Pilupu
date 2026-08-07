@@ -151,10 +151,28 @@ export default function PremiumPage() {
                 You are already a Premium Member!
               </div>
             ) : (
-              <CashfreeCheckout 
-                buttonText={`Subscribe for ₹${isYearly ? yearlyPrice : monthlyPrice}`} 
-                amount={isYearly ? yearlyPrice : monthlyPrice} 
-              />
+              <>
+                <CashfreeCheckout 
+                  buttonText={`Subscribe for ₹${isYearly ? yearlyPrice : monthlyPrice}`} 
+                  planId={isYearly ? 'premium_yearly_950' : 'premium_monthly_99'}
+                  amount={isYearly ? yearlyPrice : monthlyPrice} 
+                />
+                
+                <div style={{ marginTop: '20px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', color: 'var(--text-muted)', fontSize: '0.9rem' }}>
+                  <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                      <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                    </svg>
+                    Secure payments via Cashfree
+                  </span>
+                  <div style={{ display: 'flex', gap: '12px', alignItems: 'center', opacity: 0.8 }}>
+                    <span style={{ fontWeight: 'bold', border: '1px solid var(--border-color)', padding: '2px 8px', borderRadius: '6px', fontSize: '0.8rem' }}>UPI</span>
+                    <span style={{ fontWeight: 'bold', border: '1px solid var(--border-color)', padding: '2px 8px', borderRadius: '6px', fontSize: '0.8rem' }}>Cards</span>
+                    <span style={{ fontWeight: 'bold', border: '1px solid var(--border-color)', padding: '2px 8px', borderRadius: '6px', fontSize: '0.8rem' }}>NetBanking</span>
+                  </div>
+                </div>
+              </>
             )}
           </div>
 

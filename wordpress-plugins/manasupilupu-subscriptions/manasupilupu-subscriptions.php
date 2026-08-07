@@ -15,8 +15,8 @@ if (!defined('ABSPATH')) {
 // ---------------------------------------------------------
 define('MP_JWT_SECRET', 'YOUR_SUPER_SECRET_JWT_KEY_MAKE_IT_LONG');
 define('CASHFREE_APP_ID', 'TEST10460061582c1f17ce01dbe4733516006401');
-define('CASHFREE_SECRET_KEY', 'REPLACE_WITH_YOUR_ACTUAL_SECRET_KEY_IN_PRODUCTION');
-define('CASHFREE_API_URL', 'https://sandbox.cashfree.com/pg/orders');
+define('CASHFREE_SECRET_KEY', getenv('CASHFREE_SECRET_KEY') ?: 'REPLACE_WITH_YOUR_ACTUAL_SECRET_KEY_IN_PRODUCTION');
+define('CASHFREE_API_URL', 'https://sandbox.cashfree.com/pg/subscriptions');
 
 // ---------------------------------------------------------
 // CORS HANDLING
@@ -290,25 +290,28 @@ function mp_subs_create_order($request)
     $username = $body['username'] ?? 'Premium User';
     $email = $body['email'] ?? 'user@example.com';
     $id = $body['id'] ?? 'GUEST';
-    $amount = $body['amount'] ?? 99.00;
+    $plan_id = $body['plan_id'] ?? 'premium_monthly_99';
 
-    $orderId = 'ORDER_' . time() . '_' . rand(100, 999);
+    $allowed_plans = array('premium_monthly_99', 'premium_yearly_950');
+    if (!in_array($plan_id, $allowed_plans)) {
+        return new WP_Error('invalid_plan', 'Invalid subscription plan selected.', array('status' => 400));
+    }
+
+    $subscriptionId = 'SUB_' . time() . '_' . rand(100, 999);
 
     $customer_id = (!$id || $id === 'GUEST') ? 'GUEST_' . time() : (string) $id;
 
     $payload = array(
-        'order_amount' => (float) $amount,
-        'order_currency' => 'INR',
-        'order_id' => $orderId,
+        'subscription_id' => $subscriptionId,
+        'plan_details' => array(
+            'plan_id' => $plan_id
+        ),
         'customer_details' => array(
-            'customer_id' => $customer_id,
             'customer_name' => $username,
             'customer_email' => $email,
             'customer_phone' => '9999999999'
         ),
-        'order_meta' => array(
-            'return_url' => 'http://localhost:3000/pricing?status=success'
-        )
+        'return_url' => 'http://localhost:3000/pricing?status=success'
     );
 
     $args = array(
@@ -337,8 +340,8 @@ function mp_subs_create_order($request)
     }
 
     return rest_ensure_response(array(
-        'payment_session_id' => $response_body['payment_session_id'],
-        'order_id' => $response_body['order_id']
+        'subscription_session_id' => $response_body['subscription_session_id'] ?? '',
+        'subscription_id' => $response_body['subscription_id'] ?? ''
     ));
 }
 
