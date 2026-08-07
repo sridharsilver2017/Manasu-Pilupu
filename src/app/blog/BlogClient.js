@@ -196,7 +196,7 @@ export default function BlogClient({ initialPosts = [], initialTotalPages = 1 })
             <option value="all">అన్ని వర్గాలు (All Categories)</option>
             {categories.map(cat => (
               <option key={cat.id} value={cat.id}>
-                {cat.name}
+                {cat.name.replace(/&amp;/g, '&').replace(/&#038;/g, '&').replace(/&#8211;/g, '-')}
               </option>
             ))}
           </select>
