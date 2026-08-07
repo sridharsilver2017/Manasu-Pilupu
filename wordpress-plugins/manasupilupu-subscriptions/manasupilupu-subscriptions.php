@@ -393,19 +393,22 @@ function mp_subs_save_free_meta_box($post_id)
 // AUTOMATIC 2-WAY CONTENT SYNC
 // ---------------------------------------------------------
 // 1. Register the meta field so the REST API can read/write it
-add_action('init', function() {
+add_action('init', function () {
     register_post_meta('post', '_remote_post_id', array(
         'show_in_rest' => true,
-        'single'       => true,
-        'type'         => 'integer',
-        'auth_callback'=> function() { return current_user_can('edit_posts'); }
+        'single' => true,
+        'type' => 'integer',
+        'auth_callback' => function () {
+            return current_user_can('edit_posts'); }
     ));
 });
 
 // Helper: Sync a specific taxonomy (categories or tags)
-function mp_subs_sync_terms($post_id, $taxonomy, $remote_api_url, $headers) {
+function mp_subs_sync_terms($post_id, $taxonomy, $remote_api_url, $headers)
+{
     $terms = wp_get_post_terms($post_id, $taxonomy);
-    if (empty($terms) || is_wp_error($terms)) return array();
+    if (empty($terms) || is_wp_error($terms))
+        return array();
 
     $remote_ids = array();
     $endpoint = rtrim(str_replace('/posts', '', $remote_api_url), '/') . '/' . ($taxonomy === 'post_tag' ? 'tags' : 'categories');
@@ -414,7 +417,7 @@ function mp_subs_sync_terms($post_id, $taxonomy, $remote_api_url, $headers) {
         // Check if term exists remotely by slug
         $search_url = $endpoint . '?slug=' . urlencode($term->slug);
         $search_res = wp_remote_get($search_url, array('headers' => $headers, 'timeout' => 15));
-        
+
         $remote_term_id = null;
         if (!is_wp_error($search_res) && wp_remote_retrieve_response_code($search_res) === 200) {
             $body = json_decode(wp_remote_retrieve_body($search_res), true);
@@ -427,7 +430,7 @@ function mp_subs_sync_terms($post_id, $taxonomy, $remote_api_url, $headers) {
         if (!$remote_term_id) {
             $create_res = wp_remote_post($endpoint, array(
                 'headers' => $headers,
-                'body'    => json_encode(array('name' => $term->name, 'slug' => $term->slug)),
+                'body' => json_encode(array('name' => $term->name, 'slug' => $term->slug)),
                 'timeout' => 15
             ));
             if (!is_wp_error($create_res) && wp_remote_retrieve_response_code($create_res) === 201) {
@@ -446,9 +449,11 @@ function mp_subs_sync_terms($post_id, $taxonomy, $remote_api_url, $headers) {
 }
 
 // Helper: Sync Featured Image
-function mp_subs_sync_featured_image($post_id, $remote_api_url, $auth_header) {
+function mp_subs_sync_featured_image($post_id, $remote_api_url, $auth_header)
+{
     $thumb_id = get_post_thumbnail_id($post_id);
-    if (!$thumb_id) return null;
+    if (!$thumb_id)
+        return null;
 
     // Check if we've already synced this specific attachment ID
     $mapped_thumb_id = get_post_meta($post_id, '_remote_thumbnail_id_mapping', true);
@@ -460,24 +465,25 @@ function mp_subs_sync_featured_image($post_id, $remote_api_url, $auth_header) {
     }
 
     $image_path = get_attached_file($thumb_id);
-    if (!$image_path || !file_exists($image_path)) return null;
+    if (!$image_path || !file_exists($image_path))
+        return null;
 
     $endpoint = rtrim(str_replace('/posts', '', $remote_api_url), '/') . '/media';
-    
+
     $file_content = file_get_contents($image_path);
     $filename = basename($image_path);
     $mime_type = wp_check_filetype($image_path)['type'] ?: 'image/jpeg';
 
     $headers = array(
         'Authorization' => $auth_header,
-        'Content-Type'  => $mime_type,
+        'Content-Type' => $mime_type,
         'Content-Disposition' => 'attachment; filename="' . $filename . '"',
-        'X-MP-Sync'     => 'true'
+        'X-MP-Sync' => 'true'
     );
 
     $response = wp_remote_post($endpoint, array(
         'headers' => $headers,
-        'body'    => $file_content,
+        'body' => $file_content,
         'timeout' => 30
     ));
 
@@ -496,22 +502,26 @@ function mp_subs_sync_featured_image($post_id, $remote_api_url, $auth_header) {
 // 2. Hook into post saves
 add_action('save_post', 'mp_subs_sync_post_to_destination', 10, 3);
 
-function mp_subs_sync_post_to_destination($post_id, $post, $update) {
+function mp_subs_sync_post_to_destination($post_id, $post, $update)
+{
     // Prevent infinite loop if this request is from our own sync script
     if (isset($_SERVER['HTTP_X_MP_SYNC']) && $_SERVER['HTTP_X_MP_SYNC'] === 'true') {
         return;
     }
 
     // Only sync standard posts and avoid autosaves or revisions
-    if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) return;
-    if ($post->post_type !== 'post') return;
-    if (wp_is_post_revision($post_id)) return;
+    if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE)
+        return;
+    if ($post->post_type !== 'post')
+        return;
+    if (wp_is_post_revision($post_id))
+        return;
 
     // --- CONFIGURATION ---
     // Make sure to swap these depending on which site this plugin is installed on!
     $remote_api_url = 'https://sridharsilver.gt.tc/te/wp-json/wp/v2/posts';
-    $remote_username = 'admin'; 
-    $remote_app_password = 'REPLACE_WITH_YOUR_DESTINATION_APPLICATION_PASSWORD'; 
+    $remote_username = 'admin';
+    $remote_app_password = 'REPLACE_WITH_YOUR_DESTINATION_APPLICATION_PASSWORD';
     // ---------------------
 
     $remote_post_id = get_post_meta($post_id, '_remote_post_id', true);
@@ -530,8 +540,8 @@ function mp_subs_sync_post_to_destination($post_id, $post, $update) {
     $auth_header = 'Basic ' . base64_encode($remote_username . ':' . $remote_app_password);
     $json_headers = array(
         'Authorization' => $auth_header,
-        'Content-Type'  => 'application/json',
-        'X-MP-Sync'     => 'true' // Add our custom header to prevent infinite loops
+        'Content-Type' => 'application/json',
+        'X-MP-Sync' => 'true' // Add our custom header to prevent infinite loops
     );
 
     // Sync terms
@@ -543,12 +553,12 @@ function mp_subs_sync_post_to_destination($post_id, $post, $update) {
 
     // Prepare the post data to send
     $post_data = array(
-        'title'      => $post->post_title,
-        'content'    => $post->post_content,
-        'status'     => $post->post_status,
+        'title' => $post->post_title,
+        'content' => $post->post_content,
+        'status' => $post->post_status,
         'categories' => $remote_categories,
-        'tags'       => $remote_tags,
-        'meta'       => array('_remote_post_id' => $post_id)
+        'tags' => $remote_tags,
+        'meta' => array('_remote_post_id' => $post_id)
     );
 
     if ($remote_media_id) {
@@ -556,9 +566,9 @@ function mp_subs_sync_post_to_destination($post_id, $post, $update) {
     }
 
     $response = wp_remote_request($endpoint, array(
-        'method'  => $method,
+        'method' => $method,
         'headers' => $json_headers,
-        'body'    => json_encode($post_data),
+        'body' => json_encode($post_data),
         'timeout' => 30, // Increased timeout for potential media uploads
         'blocking' => true // Need to block to get the new ID back
     ));

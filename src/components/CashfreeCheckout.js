@@ -26,8 +26,8 @@ export default function CashfreeCheckout({ buttonText, onSuccess, amount = 99 })
     setLoading(true);
 
     try {
-      // 1. Call our local Next.js API route to generate a Cashfree session ID
-      const subscriptionRes = await fetch('/api/cashfree/create-order', {
+      // 1. Call our WordPress API route to generate a Cashfree session ID
+      const subscriptionRes = await fetch('https://dev-sridhar-silver.pantheonsite.io/wp-json/mp-subs/v1/create-order', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -42,7 +42,7 @@ export default function CashfreeCheckout({ buttonText, onSuccess, amount = 99 })
       const subscriptionData = await subscriptionRes.json();
 
       if (!subscriptionRes.ok || !subscriptionData.payment_session_id) {
-        alert(subscriptionData.message || 'Failed to create subscription session with Cashfree.');
+        alert(subscriptionData.error || 'Failed to create subscription session with Cashfree.');
         setLoading(false);
         return;
       }
@@ -77,7 +77,12 @@ export default function CashfreeCheckout({ buttonText, onSuccess, amount = 99 })
 
     } catch (err) {
       console.error(err);
-      alert('Network error while starting checkout.');
+      let errMsg = err.message || err.toString();
+      let errStack = err.stack ? `\nStack: ${err.stack}` : '';
+      let jsonErr = '';
+      try { jsonErr = `\nJSON: ${JSON.stringify(err, Object.getOwnPropertyNames(err))}`; } catch(e) {}
+      
+      alert(`Error starting checkout: ${errMsg}${errStack}${jsonErr}`);
     } finally {
       setLoading(false);
     }
