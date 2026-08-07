@@ -9,11 +9,12 @@ import PostCard from '@/components/PostCard';
 export default function HomeClient({ initialPosts = [] }) {
   const [posts, setPosts] = useState(initialPosts);
   const [loading, setLoading] = useState(initialPosts.length === 0);
+  const [activeTab, setActiveTab] = useState('all'); // 'all', 'free', 'premium'
 
   useEffect(() => {
     async function loadPosts() {
       // 1. Try to load from cache immediately
-      const cached = getCachedPaginatedPosts(1, 6);
+      const cached = getCachedPaginatedPosts(1, 12);
       if (cached && cached.posts) {
         setPosts(cached.posts);
         setLoading(false);
@@ -21,7 +22,7 @@ export default function HomeClient({ initialPosts = [] }) {
 
       // 2. Fetch fresh data in the background
       try {
-        const { posts: fetchedPosts } = await getPaginatedPostsClient(1, 6);
+        const { posts: fetchedPosts } = await getPaginatedPostsClient(1, 12);
         setPosts(fetchedPosts);
       } catch (e) {
         console.error(e);
@@ -48,15 +49,76 @@ export default function HomeClient({ initialPosts = [] }) {
       </section>
 
       <section className="articles-section animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
-        <div className="section-header">
+        <div className="section-header" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '20px' }}>
           <h2>తాజా వ్యాసాలు</h2>
+          
+          <div className="content-tabs" style={{ 
+            display: 'flex', 
+            gap: '10px', 
+            background: 'var(--bg-secondary)', 
+            padding: '6px', 
+            borderRadius: '30px',
+            marginBottom: '20px'
+          }}>
+            <button 
+              onClick={() => setActiveTab('all')}
+              style={{
+                padding: '8px 20px',
+                borderRadius: '20px',
+                border: 'none',
+                background: activeTab === 'all' ? 'var(--primary-color)' : 'transparent',
+                color: activeTab === 'all' ? '#fff' : 'var(--text-color)',
+                fontWeight: activeTab === 'all' ? 'bold' : 'normal',
+                cursor: 'pointer',
+                transition: 'all 0.3s ease'
+              }}
+            >
+              అన్ని (All)
+            </button>
+            <button 
+              onClick={() => setActiveTab('free')}
+              style={{
+                padding: '8px 20px',
+                borderRadius: '20px',
+                border: 'none',
+                background: activeTab === 'free' ? 'var(--primary-color)' : 'transparent',
+                color: activeTab === 'free' ? '#fff' : 'var(--text-color)',
+                fontWeight: activeTab === 'free' ? 'bold' : 'normal',
+                cursor: 'pointer',
+                transition: 'all 0.3s ease'
+              }}
+            >
+              ఉచితం (Free)
+            </button>
+            <button 
+              onClick={() => setActiveTab('premium')}
+              style={{
+                padding: '8px 20px',
+                borderRadius: '20px',
+                border: 'none',
+                background: activeTab === 'premium' ? 'var(--primary-color)' : 'transparent',
+                color: activeTab === 'premium' ? '#fff' : 'var(--text-color)',
+                fontWeight: activeTab === 'premium' ? 'bold' : 'normal',
+                cursor: 'pointer',
+                transition: 'all 0.3s ease'
+              }}
+            >
+              ప్రీమియం (Premium)
+            </button>
+          </div>
         </div>
 
         {loading ? (
           <div style={{ textAlign: 'center', padding: '40px' }}>Loading posts...</div>
         ) : (
           <div className="posts-grid">
-            {posts.map((post) => (
+            {posts
+              .filter(post => {
+                if (activeTab === 'free') return post.is_premium_type === false;
+                if (activeTab === 'premium') return post.is_premium_type === true;
+                return true; // 'all'
+              })
+              .map((post) => (
               <PostCard key={post.id} post={post} />
             ))}
           </div>

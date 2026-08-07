@@ -9,7 +9,7 @@ export const metadata = {
 export default async function Home() {
   let initialPosts = [];
   try {
-    const data = await getPaginatedPosts(1, 6);
+    const data = await getPaginatedPosts(1, 12);
     initialPosts = data.posts || [];
   } catch (e) {
     console.error('Failed to fetch initial posts for home page:', e);
