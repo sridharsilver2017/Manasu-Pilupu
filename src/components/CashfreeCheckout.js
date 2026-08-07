@@ -42,7 +42,8 @@ export default function CashfreeCheckout({ buttonText, onSuccess, amount = 99 })
       const subscriptionData = await subscriptionRes.json();
 
       if (!subscriptionRes.ok || !subscriptionData.payment_session_id) {
-        alert(subscriptionData.error || 'Failed to create subscription session with Cashfree.');
+        const backendError = subscriptionData.message || subscriptionData.error || 'Failed to create subscription session with Cashfree.';
+        alert(`Backend Error: ${backendError}`);
         setLoading(false);
         return;
       }
