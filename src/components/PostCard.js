@@ -22,7 +22,7 @@ export default function PostCard({ post }) {
     <div className="post-card" style={{ position: 'relative' }}>
       {imageUrl && (
         <div className="post-card-image-wrapper" style={{ position: 'relative' }}>
-          <Link href={`/posts/${post.slug}`} style={{ display: 'block', width: '100%', height: '100%' }}>
+          <Link href={`/posts/${post.slug}`} style={{ display: 'block', width: '100%', height: '100%' }} target="_blank" rel="noopener noreferrer">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={imageUrl}
@@ -33,7 +33,7 @@ export default function PostCard({ post }) {
         </div>
       )}
       <div className="post-card-content">
-        <Link href={`/posts/${post.slug}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+        <Link href={`/posts/${post.slug}`} style={{ textDecoration: 'none', color: 'inherit' }} target="_blank" rel="noopener noreferrer">
           <h2
             className="post-card-title"
             dangerouslySetInnerHTML={{ __html: post.title.rendered }}

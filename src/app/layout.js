@@ -11,6 +11,7 @@ import TrialPopup from "@/components/TrialPopup";
 import MaintenanceChecker from "@/components/MaintenanceChecker";
 import { AuthProvider } from "@/context/AuthContext";
 import { DesktopAuthLink, MobileAuthLink } from "@/components/AuthLinks";
+import DisableCopy from "@/components/DisableCopy";
 
 const ramabhadra = Ramabhadra({ 
   weight: "400", 
@@ -63,6 +64,7 @@ export default function RootLayout({ children }) {
             <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
             <PwaRegistry />
             <PushNotificationManager />
+            <DisableCopy />
             {/* <TrialPopup /> */}
             <div className="container">
             <header className="site-header">
