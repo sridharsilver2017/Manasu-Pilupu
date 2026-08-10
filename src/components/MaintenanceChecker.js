@@ -9,14 +9,12 @@ const WP_API_BASE_URL = 'https://dev-sridhar-silver.pantheonsite.io/wp-json/mp-m
 
 export default function MaintenanceChecker({ children }) {
   const [isMaintenance, setIsMaintenance] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
   const pathname = usePathname();
 
   useEffect(() => {
     async function checkMaintenanceStatus() {
       // Don't block the admin page
       if (pathname === '/admin') {
-        setIsLoading(false);
         return;
       }
       
@@ -29,29 +27,16 @@ export default function MaintenanceChecker({ children }) {
         }
       } catch (err) {
         console.error("Failed to fetch maintenance status", err);
-      } finally {
-        setIsLoading(false);
       }
     }
 
     if (WP_API_BASE_URL && WP_API_BASE_URL.includes('http')) {
       checkMaintenanceStatus();
-    } else {
-      setIsLoading(false);
     }
   }, [pathname]);
 
-  // If we're still checking, you can either show a loader or render children directly
-  // Rendering nothing or a spinner prevents "flash of content" before maintenance screen appears.
-  if (isLoading) {
-    return (
-      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', backgroundColor: 'var(--bg-color, #000)' }}>
-        <div style={{ width: '40px', height: '40px', border: '4px solid #333', borderTop: '4px solid #0070f3', borderRadius: '50%', animation: 'spin 1s linear infinite' }}></div>
-        <style>{`@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }`}</style>
-      </div>
-    );
-  }
-
+  // Removed the loading spinner to prevent blocking the initial render.
+  // The check will happen silently in the background.
   // If maintenance is true, show maintenance screen (unless on admin page)
   if (isMaintenance && pathname !== '/admin') {
     return (
