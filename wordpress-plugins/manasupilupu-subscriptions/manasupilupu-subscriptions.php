@@ -14,9 +14,9 @@ if (!defined('ABSPATH')) {
 // CONFIGURATION: Cashfree & JWT
 // ---------------------------------------------------------
 define('MP_JWT_SECRET', 'YOUR_SUPER_SECRET_JWT_KEY_MAKE_IT_LONG');
-define('CASHFREE_APP_ID', 'TEST10460061582c1f17ce01dbe4733516006401');
-define('CASHFREE_SECRET_KEY', getenv('CASHFREE_SECRET_KEY') ?: 'REPLACE_WITH_YOUR_ACTUAL_SECRET_KEY_IN_PRODUCTION');
-define('CASHFREE_API_URL', 'https://sandbox.cashfree.com/pg/subscriptions');
+define('CASHFREE_APP_ID', getenv('CASHFREE_APP_ID') ?: '900276e82b2b1228b23546b1ae672009');
+define('CASHFREE_SECRET_KEY', getenv('CASHFREE_SECRET_KEY') ?: '');
+define('CASHFREE_API_URL', 'https://api.cashfree.com/pg/subscriptions');
 
 // ---------------------------------------------------------
 // CORS HANDLING
@@ -584,5 +584,64 @@ function mp_subs_sync_post_to_destination($post_id, $post, $update)
         if ($response_code === 201 && !$remote_post_id && isset($body['id'])) {
             update_post_meta($post_id, '_remote_post_id', $body['id']);
         }
+    }
+}
+
+// ---------------------------------------------------------
+// ADMIN POST LIST FILTER FOR FREE/PREMIUM
+// ---------------------------------------------------------
+add_action('restrict_manage_posts', 'mp_subs_add_free_premium_filter');
+function mp_subs_add_free_premium_filter($post_type) {
+    if ($post_type !== 'post') {
+        return;
+    }
+
+    $selected = isset($_GET['mp_subs_filter']) ? $_GET['mp_subs_filter'] : '';
+    ?>
+    <select name="mp_subs_filter">
+        <option value="">All (Free & Premium)</option>
+        <option value="free" <?php selected($selected, 'free'); ?>>Free</option>
+        <option value="premium" <?php selected($selected, 'premium'); ?>>Premium</option>
+    </select>
+    <?php
+}
+
+add_action('pre_get_posts', 'mp_subs_filter_posts_by_free_premium');
+function mp_subs_filter_posts_by_free_premium($query) {
+    global $pagenow;
+    
+    if (!is_admin() || $pagenow !== 'edit.php' || !$query->is_main_query() || $query->get('post_type') !== 'post') {
+        return;
+    }
+
+    if (isset($_GET['mp_subs_filter']) && $_GET['mp_subs_filter'] !== '') {
+        $filter = $_GET['mp_subs_filter'];
+        $meta_query = $query->get('meta_query');
+        if (!is_array($meta_query)) {
+            $meta_query = array();
+        }
+
+        if ($filter === 'free') {
+            $meta_query[] = array(
+                'key' => 'is_free_post',
+                'value' => 'yes',
+                'compare' => '='
+            );
+        } elseif ($filter === 'premium') {
+            $meta_query[] = array(
+                'relation' => 'OR',
+                array(
+                    'key' => 'is_free_post',
+                    'compare' => 'NOT EXISTS'
+                ),
+                array(
+                    'key' => 'is_free_post',
+                    'value' => 'yes',
+                    'compare' => '!='
+                )
+            );
+        }
+
+        $query->set('meta_query', $meta_query);
     }
 }

@@ -2,7 +2,7 @@ import Link from 'next/link';
 import CopyUpi from './CopyUpi';
 
 export const metadata = {
-  title: 'సపోర్ట్ చేయండి | Sridhar Blog',
+  title: 'సపోర్ట్ చేయండి | Manasu Pilupu',
   description: 'Support independent writing.',
 };
 

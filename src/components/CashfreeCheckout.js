@@ -51,7 +51,7 @@ export default function CashfreeCheckout({ buttonText, onSuccess, amount = 99, p
 
       // 2. Load the Cashfree SDK
       const cashfree = await load({
-        mode: "sandbox",
+        mode: "production",
       });
 
       // 3. Configure Checkout Options

@@ -23,7 +23,7 @@ export default function CopyUpi({ upiId }) {
     }
   };
 
-  const upiUrl = `upi://pay?pa=${upiId}&pn=Sridhar`;
+  const upiUrl = `upi://pay?pa=${upiId}&pn=Manasu Pilupu`;
 
   return (
     <div style={{ padding: '32px', backgroundColor: 'var(--card-bg)', borderRadius: 'var(--radius)', border: '1px solid var(--border-color)', margin: '32px 0', textAlign: 'center' }}>

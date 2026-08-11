@@ -8,8 +8,8 @@ export async function POST(req) {
     const orderId = `ORDER_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
     const orderAmount = amount || 99.00;
     
-    // We are using the Sandbox (Test) URL
-    const CASHFREE_API_URL = 'https://sandbox.cashfree.com/pg/orders';
+    // We are using the Production URL
+    const CASHFREE_API_URL = 'https://api.cashfree.com/pg/orders';
 
     const response = await fetch(CASHFREE_API_URL, {
       method: 'POST',

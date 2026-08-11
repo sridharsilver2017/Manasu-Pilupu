@@ -4,7 +4,7 @@
  * Plugin URI: https://manasupilupu.pages.dev
  * Description: Adds custom REST API endpoints to handle global likes for the Next.js frontend.
  * Version: 1.0.0
- * Author: Sridhar Silver
+ * Author: Manasu Pilupu
  * License: GPL2
  */
 
