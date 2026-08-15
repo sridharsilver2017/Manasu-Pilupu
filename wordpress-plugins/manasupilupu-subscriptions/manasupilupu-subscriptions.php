@@ -255,20 +255,41 @@ function mp_subs_protect_post_content($response, $post, $request)
     $is_premium_post = !$is_free_post;
 
     $response->data['is_premium_type'] = $is_premium_post;
+    $response->data['hide_ai_note'] = get_post_meta($post->ID, 'hide_ai_note', true) === 'yes';
 
     // Only protect full single post requests, not list views
     // Wait, let's protect the content field.
     if ($is_premium_post && !$is_premium) {
-        // Truncate content to first 2 paragraphs as a teaser
+        // Truncate content to show only 45% of total characters (preserving HTML tags)
         $content = $post->post_content;
-        $paragraphs = explode("</p>", $content);
+        $plain_text_length = mb_strlen(strip_tags($content));
+        $target_chars = max(1, ceil($plain_text_length * 0.45));
+        
         $teaser = "";
-        $limit = min(4, count($paragraphs));
-        for ($i = 0; $i < $limit; $i++) {
-            if (trim($paragraphs[$i]) !== "") {
-                $teaser .= $paragraphs[$i] . "</p>";
+        $current_chars = 0;
+        $in_tag = false;
+        
+        $length = mb_strlen($content);
+        for ($i = 0; $i < $length; $i++) {
+            $char = mb_substr($content, $i, 1);
+            $teaser .= $char;
+            
+            if ($char === '<') {
+                $in_tag = true;
+            } elseif ($char === '>') {
+                $in_tag = false;
+            } elseif (!$in_tag) {
+                $current_chars++;
+            }
+            
+            // Stop once we hit the target character count (outside of an HTML tag)
+            if ($current_chars >= $target_chars && !$in_tag) {
+                break;
             }
         }
+        
+        // Use WordPress built-in function to safely close any unclosed HTML tags
+        $teaser = force_balance_tags($teaser);
         $teaser .= '<div class="premium-locked"></div>';
 
         $response->data['content']['rendered'] = apply_filters('the_content', $teaser);
@@ -346,49 +367,62 @@ function mp_subs_create_order($request)
 }
 
 // ---------------------------------------------------------
-// ADD META BOX FOR FREE CONTENT
+// ADD META BOX FOR POST SETTINGS (Free Content, AI Note)
 // ---------------------------------------------------------
-add_action('add_meta_boxes', 'mp_subs_add_free_meta_box');
-function mp_subs_add_free_meta_box()
+add_action('add_meta_boxes', 'mp_subs_add_post_settings_meta_box');
+function mp_subs_add_post_settings_meta_box()
 {
     add_meta_box(
-        'mp_subs_free_box',
-        'Free Content Setting',
-        'mp_subs_free_meta_box_html',
+        'mp_subs_post_settings_box',
+        'Post Settings',
+        'mp_subs_post_settings_meta_box_html',
         'post',
         'side',
         'default'
     );
 }
 
-function mp_subs_free_meta_box_html($post)
+function mp_subs_post_settings_meta_box_html($post)
 {
-    $value = get_post_meta($post->ID, 'is_free_post', true);
-    $checked = ($value === 'yes') ? 'checked' : '';
+    $is_free = get_post_meta($post->ID, 'is_free_post', true);
+    $hide_ai = get_post_meta($post->ID, 'hide_ai_note', true);
+    
+    $free_checked = ($is_free === 'yes') ? 'checked' : '';
+    $hide_ai_checked = ($hide_ai === 'yes') ? 'checked' : '';
     ?>
-    <label for="mp_subs_is_free_post">
-        <input type="checkbox" name="mp_subs_is_free_post" id="mp_subs_is_free_post" value="yes" <?php echo $checked; ?>>
-        Make this post FREE (no subscription required). By default, all posts are Premium.
-    </label>
+    <p>
+        <label for="mp_subs_is_free_post">
+            <input type="checkbox" name="mp_subs_is_free_post" id="mp_subs_is_free_post" value="yes" <?php echo $free_checked; ?>>
+            Make this post FREE (no subscription required). By default, all posts are Premium.
+        </label>
+    </p>
+    <p>
+        <label for="mp_subs_hide_ai_note">
+            <input type="checkbox" name="mp_subs_hide_ai_note" id="mp_subs_hide_ai_note" value="yes" <?php echo $hide_ai_checked; ?>>
+            Hide the "AI Note" at the bottom of this post.
+        </label>
+    </p>
     <?php
 }
 
-add_action('save_post', 'mp_subs_save_free_meta_box');
-function mp_subs_save_free_meta_box($post_id)
+add_action('save_post', 'mp_subs_save_post_settings_meta_box');
+function mp_subs_save_post_settings_meta_box($post_id)
 {
-    if (array_key_exists('mp_subs_is_free_post', $_POST)) {
-        update_post_meta(
-            $post_id,
-            'is_free_post',
-            $_POST['mp_subs_is_free_post']
-        );
-    } else {
-        if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE)
-            return;
-        if (!current_user_can('edit_post', $post_id))
-            return;
+    if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE)
+        return;
+    if (!current_user_can('edit_post', $post_id))
+        return;
 
+    if (array_key_exists('mp_subs_is_free_post', $_POST)) {
+        update_post_meta($post_id, 'is_free_post', $_POST['mp_subs_is_free_post']);
+    } else {
         update_post_meta($post_id, 'is_free_post', 'no');
+    }
+
+    if (array_key_exists('mp_subs_hide_ai_note', $_POST)) {
+        update_post_meta($post_id, 'hide_ai_note', $_POST['mp_subs_hide_ai_note']);
+    } else {
+        update_post_meta($post_id, 'hide_ai_note', 'no');
     }
 }
 
