@@ -153,7 +153,7 @@ export default function PostClient({ initialSlug, initialPost, initialAllPosts =
                         textDecoration: 'none',
                         transition: 'var(--transition)'
                       }}>
-                        {cat.name}
+                        {cat.name.replace(/&amp;/g, '&').replace(/&#038;/g, '&').replace(/&#8211;/g, '-')}
                       </Link>
                     ))}
                   </div>
