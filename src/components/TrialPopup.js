@@ -9,9 +9,21 @@ export default function TrialPopup() {
   const pathname = usePathname();
 
   useEffect(() => {
-    // Small delay so it doesn't abruptly show on first paint
-    const timer = setTimeout(() => setIsOpen(true), 1500);
-    return () => clearTimeout(timer);
+    // Check if the "all-free" plugin is active on the backend
+    fetch('https://dev-sridhar-silver.pantheonsite.io/wp-json/mp/v1/is-all-free')
+      .then(res => {
+        if (res.ok) return res.json();
+        throw new Error('Plugin not active');
+      })
+      .then(data => {
+        if (data === true) {
+          // Small delay so it doesn't abruptly show on first paint
+          setTimeout(() => setIsOpen(true), 1500);
+        }
+      })
+      .catch(() => {
+        // Plugin is not active or endpoint doesn't exist, do not show popup
+      });
   }, []);
 
   const handleClose = () => {

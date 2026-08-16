@@ -65,7 +65,7 @@ export default function RootLayout({ children }) {
             <PwaRegistry />
             <PushNotificationManager />
             <DisableCopy />
-            {/* <TrialPopup /> */}
+            <TrialPopup />
             <div className="container">
             <header className="site-header">
               <Link href="/" className="logo" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
