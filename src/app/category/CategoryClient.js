@@ -56,7 +56,7 @@ export default function CategoryClient() {
     <div className="home-wrapper" style={{ paddingTop: '40px' }}>
       <section className="animate-fade-in-up">
         <div className="section-header" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '20px' }}>
-          <h1>{category.name} <span style={{ fontSize: '0.6em', opacity: 0.7, fontWeight: 'normal' }}>({category.count})</span></h1>
+          <h1>{category.name.replace(/&amp;/g, '&').replace(/&#038;/g, '&').replace(/&#8211;/g, '-')} <span style={{ fontSize: '0.6em', opacity: 0.7, fontWeight: 'normal' }}>({category.count})</span></h1>
           {category.description && <p style={{ marginTop: '10px', color: 'var(--text-secondary)' }}>{category.description}</p>}
 
           <div className="content-tabs" style={{ 

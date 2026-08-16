@@ -56,7 +56,7 @@ export default function CategoriesClient() {
                 }}
               >
                 <h2 style={{ fontSize: '1.5rem', marginBottom: '10px', color: 'var(--primary-color)' }}>
-                  {category.name}
+                  {category.name.replace(/&amp;/g, '&').replace(/&#038;/g, '&').replace(/&#8211;/g, '-')}
                 </h2>
                 <span style={{ backgroundColor: 'var(--bg-primary)', padding: '4px 12px', borderRadius: '15px', fontSize: '0.85rem', fontWeight: 'bold' }}>
                   {category.count} {category.count === 1 ? 'వ్యాసం' : 'వ్యాసాలు'}

@@ -20,6 +20,8 @@ function getLocalFilename(wpUrl) {
   return null;
 }
 
+const sharp = require('sharp');
+
 // Download a single file
 function downloadImage(url, filepath) {
   return new Promise((resolve, reject) => {
@@ -30,9 +32,31 @@ function downloadImage(url, filepath) {
     
     https.get(url, (res) => {
       if (res.statusCode === 200) {
-        res.pipe(fs.createWriteStream(filepath))
-           .on('error', reject)
-           .once('close', () => resolve(filepath));
+        const chunks = [];
+        res.on('data', chunk => chunks.push(chunk));
+        res.on('end', async () => {
+          try {
+            const buffer = Buffer.concat(chunks);
+            let image = sharp(buffer).resize({ width: 1200, withoutEnlargement: true });
+            
+            const metadata = await image.metadata();
+            if (metadata.format === 'jpeg' || metadata.format === 'jpg') {
+              image = image.jpeg({ quality: 75 });
+            } else if (metadata.format === 'png') {
+              image = image.png({ quality: 75, compressionLevel: 8 });
+            } else if (metadata.format === 'webp') {
+              image = image.webp({ quality: 75 });
+            }
+            
+            await image.toFile(filepath);
+            resolve(filepath);
+          } catch (e) {
+            // Fallback to unoptimized save if it's an SVG or sharp fails
+            const buffer = Buffer.concat(chunks);
+            fs.writeFileSync(filepath, buffer);
+            resolve(filepath);
+          }
+        });
       } else {
         res.resume();
         reject(new Error(`Request Failed With a Status Code: ${res.statusCode} for ${url}`));

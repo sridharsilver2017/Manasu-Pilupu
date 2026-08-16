@@ -114,7 +114,12 @@ export default async function StaticPostPage({ params }) {
   let initialAllPosts = [];
   try {
     initialPost = await getPostBySlug(resolvedParams.slug);
-    initialAllPosts = await getAllPosts();
+    const allPostsFull = await getAllPosts();
+    // Only extract what's needed for prev/next navigation to avoid massive JSON payloads in the HTML
+    initialAllPosts = allPostsFull.map(p => ({
+      slug: p.slug,
+      title: { rendered: p.title?.rendered || '' }
+    }));
   } catch (e) {
     console.error('Failed to fetch initial post data:', e);
   }

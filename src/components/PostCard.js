@@ -47,7 +47,7 @@ export default function PostCard({ post }) {
           <div className="post-card-categories" style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
             {categories.map(cat => (
               <Link href={`/category/${cat.slug}`} key={cat.id} style={{ fontSize: '0.7rem', backgroundColor: 'rgba(0, 20, 80, 0.85)', color: 'white', padding: '4px 10px', borderRadius: '20px', fontWeight: 'bold', textDecoration: 'none' }}>
-                {cat.name}
+                {cat.name.replace(/&amp;/g, '&').replace(/&#038;/g, '&').replace(/&#8211;/g, '-')}
               </Link>
             ))}
           </div>
