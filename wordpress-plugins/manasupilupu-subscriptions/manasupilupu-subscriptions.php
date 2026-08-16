@@ -255,7 +255,9 @@ function mp_subs_protect_post_content($response, $post, $request)
     $is_premium_post = !$is_free_post;
 
     $response->data['is_premium_type'] = $is_premium_post;
-    $response->data['hide_ai_note'] = get_post_meta($post->ID, 'hide_ai_note', true) === 'yes';
+    $global_hide_ai = get_option('mp_global_hide_ai_note', '0') === '1';
+    $post_hide_ai = get_post_meta($post->ID, 'hide_ai_note', true) === 'yes';
+    $response->data['hide_ai_note'] = $global_hide_ai || $post_hide_ai;
 
     // Only protect full single post requests, not list views
     // Wait, let's protect the content field.
@@ -619,6 +621,39 @@ function mp_subs_sync_post_to_destination($post_id, $post, $update)
             update_post_meta($post_id, '_remote_post_id', $body['id']);
         }
     }
+}
+
+// ---------------------------------------------------------
+// GLOBAL SETTINGS PAGE (AI NOTE TOGGLE)
+// ---------------------------------------------------------
+add_action('admin_menu', function() {
+    add_options_page('Manasu Pilupu Settings', 'Manasu Pilupu', 'manage_options', 'mp-settings', 'mp_settings_page');
+});
+
+function mp_settings_page() {
+    ?>
+    <div class="wrap">
+        <h1>Manasu Pilupu Settings</h1>
+        <form method="post" action="options.php">
+            <?php
+            settings_fields('mp_settings_group');
+            do_settings_sections('mp-settings');
+            submit_button();
+            ?>
+        </form>
+    </div>
+    <?php
+}
+
+add_action('admin_init', function() {
+    register_setting('mp_settings_group', 'mp_global_hide_ai_note');
+    add_settings_section('mp_main_section', 'Global Display Settings', null, 'mp-settings');
+    add_settings_field('mp_global_hide_ai_note', 'Hide AI Note Globally', 'mp_global_hide_ai_note_cb', 'mp-settings', 'mp_main_section');
+});
+
+function mp_global_hide_ai_note_cb() {
+    $checked = get_option('mp_global_hide_ai_note', '0');
+    echo '<input type="checkbox" name="mp_global_hide_ai_note" value="1" ' . checked(1, $checked, false) . ' /> Check this to hide the AI note across ALL posts.';
 }
 
 // ---------------------------------------------------------
