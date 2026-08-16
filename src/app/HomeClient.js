@@ -10,6 +10,14 @@ export default function HomeClient({ initialPosts = [] }) {
   const [posts, setPosts] = useState(initialPosts);
   const [loading, setLoading] = useState(initialPosts.length === 0);
   const [activeTab, setActiveTab] = useState('all'); // 'all', 'free', 'premium'
+  const [isAllFreeActive, setIsAllFreeActive] = useState(false);
+
+  useEffect(() => {
+    fetch('https://dev-sridhar-silver.pantheonsite.io/wp-json/mp/v1/is-all-free')
+      .then(res => { if (res.ok) return res.json(); })
+      .then(data => { if (data === true) setIsAllFreeActive(true); })
+      .catch(() => {});
+  }, []);
 
   useEffect(() => {
     async function loadPosts() {
@@ -52,60 +60,62 @@ export default function HomeClient({ initialPosts = [] }) {
         <div className="section-header" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '20px' }}>
           <h2>తాజా వ్యాసాలు</h2>
           
-          <div className="content-tabs" style={{ 
-            display: 'flex', 
-            gap: '10px', 
-            background: 'var(--bg-secondary)', 
-            padding: '6px', 
-            borderRadius: '30px',
-            marginBottom: '20px'
-          }}>
-            <button 
-              onClick={() => setActiveTab('all')}
-              style={{
-                padding: '8px 20px',
-                borderRadius: '20px',
-                border: 'none',
-                background: activeTab === 'all' ? 'var(--primary-color)' : 'transparent',
-                color: activeTab === 'all' ? '#fff' : 'var(--text-color)',
-                fontWeight: activeTab === 'all' ? 'bold' : 'normal',
-                cursor: 'pointer',
-                transition: 'all 0.3s ease'
-              }}
-            >
-              అన్ని (All)
-            </button>
-            <button 
-              onClick={() => setActiveTab('free')}
-              style={{
-                padding: '8px 20px',
-                borderRadius: '20px',
-                border: 'none',
-                background: activeTab === 'free' ? 'var(--primary-color)' : 'transparent',
-                color: activeTab === 'free' ? '#fff' : 'var(--text-color)',
-                fontWeight: activeTab === 'free' ? 'bold' : 'normal',
-                cursor: 'pointer',
-                transition: 'all 0.3s ease'
-              }}
-            >
-              ఉచితం (Free)
-            </button>
-            <button 
-              onClick={() => setActiveTab('premium')}
-              style={{
-                padding: '8px 20px',
-                borderRadius: '20px',
-                border: 'none',
-                background: activeTab === 'premium' ? 'var(--primary-color)' : 'transparent',
-                color: activeTab === 'premium' ? '#fff' : 'var(--text-color)',
-                fontWeight: activeTab === 'premium' ? 'bold' : 'normal',
-                cursor: 'pointer',
-                transition: 'all 0.3s ease'
-              }}
-            >
-              ప్రీమియం (Premium)
-            </button>
-          </div>
+          {!isAllFreeActive && (
+            <div className="content-tabs" style={{ 
+              display: 'flex', 
+              gap: '10px', 
+              background: 'var(--bg-secondary)', 
+              padding: '6px', 
+              borderRadius: '30px',
+              marginBottom: '20px'
+            }}>
+              <button 
+                onClick={() => setActiveTab('all')}
+                style={{
+                  padding: '8px 20px',
+                  borderRadius: '20px',
+                  border: 'none',
+                  background: activeTab === 'all' ? 'var(--primary-color)' : 'transparent',
+                  color: activeTab === 'all' ? '#fff' : 'var(--text-color)',
+                  fontWeight: activeTab === 'all' ? 'bold' : 'normal',
+                  cursor: 'pointer',
+                  transition: 'all 0.3s ease'
+                }}
+              >
+                అన్ని (All)
+              </button>
+              <button 
+                onClick={() => setActiveTab('free')}
+                style={{
+                  padding: '8px 20px',
+                  borderRadius: '20px',
+                  border: 'none',
+                  background: activeTab === 'free' ? 'var(--primary-color)' : 'transparent',
+                  color: activeTab === 'free' ? '#fff' : 'var(--text-color)',
+                  fontWeight: activeTab === 'free' ? 'bold' : 'normal',
+                  cursor: 'pointer',
+                  transition: 'all 0.3s ease'
+                }}
+              >
+                ఉచితం (Free)
+              </button>
+              <button 
+                onClick={() => setActiveTab('premium')}
+                style={{
+                  padding: '8px 20px',
+                  borderRadius: '20px',
+                  border: 'none',
+                  background: activeTab === 'premium' ? 'var(--primary-color)' : 'transparent',
+                  color: activeTab === 'premium' ? '#fff' : 'var(--text-color)',
+                  fontWeight: activeTab === 'premium' ? 'bold' : 'normal',
+                  cursor: 'pointer',
+                  transition: 'all 0.3s ease'
+                }}
+              >
+                ప్రీమియం (Premium)
+              </button>
+            </div>
+          )}
         </div>
 
         {loading ? (

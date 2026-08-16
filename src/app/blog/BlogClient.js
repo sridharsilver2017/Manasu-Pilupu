@@ -14,6 +14,14 @@ export default function BlogClient({ initialPosts = [], initialTotalPages = 1 })
   const [categories, setCategories] = useState([]);
   const [activeTab, setActiveTab] = useState('all');
   const [selectedCategory, setSelectedCategory] = useState('');
+  const [isAllFreeActive, setIsAllFreeActive] = useState(false);
+
+  useEffect(() => {
+    fetch('https://dev-sridhar-silver.pantheonsite.io/wp-json/mp/v1/is-all-free')
+      .then(res => { if (res.ok) return res.json(); })
+      .then(data => { if (data === true) setIsAllFreeActive(true); })
+      .catch(() => {});
+  }, []);
 
   const isInitialMount = useRef(true);
 
@@ -134,51 +142,55 @@ export default function BlogClient({ initialPosts = [], initialTotalPages = 1 })
           maxWidth: 'fit-content',
           margin: '0 auto 30px auto'
         }}>
-          <button 
-            onClick={() => setActiveTab('all')}
-            style={{
-              padding: '8px 20px',
-              borderRadius: '20px',
-              border: 'none',
-              background: activeTab === 'all' ? 'var(--primary-color)' : 'transparent',
-              color: activeTab === 'all' ? '#fff' : 'var(--text-color)',
-              fontWeight: activeTab === 'all' ? 'bold' : 'normal',
-              cursor: 'pointer',
-              transition: 'all 0.3s ease'
-            }}
-          >
-            అన్ని (All)
-          </button>
-          <button 
-            onClick={() => setActiveTab('free')}
-            style={{
-              padding: '8px 20px',
-              borderRadius: '20px',
-              border: 'none',
-              background: activeTab === 'free' ? 'var(--primary-color)' : 'transparent',
-              color: activeTab === 'free' ? '#fff' : 'var(--text-color)',
-              fontWeight: activeTab === 'free' ? 'bold' : 'normal',
-              cursor: 'pointer',
-              transition: 'all 0.3s ease'
-            }}
-          >
-            ఉచితం (Free)
-          </button>
-          <button 
-            onClick={() => setActiveTab('premium')}
-            style={{
-              padding: '8px 20px',
-              borderRadius: '20px',
-              border: 'none',
-              background: activeTab === 'premium' ? 'var(--primary-color)' : 'transparent',
-              color: activeTab === 'premium' ? '#fff' : 'var(--text-color)',
-              fontWeight: activeTab === 'premium' ? 'bold' : 'normal',
-              cursor: 'pointer',
-              transition: 'all 0.3s ease'
-            }}
-          >
-            ప్రీమియం (Premium)
-          </button>
+          {!isAllFreeActive && (
+            <>
+              <button 
+                onClick={() => setActiveTab('all')}
+                style={{
+                  padding: '8px 20px',
+                  borderRadius: '20px',
+                  border: 'none',
+                  background: activeTab === 'all' ? 'var(--primary-color)' : 'transparent',
+                  color: activeTab === 'all' ? '#fff' : 'var(--text-color)',
+                  fontWeight: activeTab === 'all' ? 'bold' : 'normal',
+                  cursor: 'pointer',
+                  transition: 'all 0.3s ease'
+                }}
+              >
+                అన్ని (All)
+              </button>
+              <button 
+                onClick={() => setActiveTab('free')}
+                style={{
+                  padding: '8px 20px',
+                  borderRadius: '20px',
+                  border: 'none',
+                  background: activeTab === 'free' ? 'var(--primary-color)' : 'transparent',
+                  color: activeTab === 'free' ? '#fff' : 'var(--text-color)',
+                  fontWeight: activeTab === 'free' ? 'bold' : 'normal',
+                  cursor: 'pointer',
+                  transition: 'all 0.3s ease'
+                }}
+              >
+                ఉచితం (Free)
+              </button>
+              <button 
+                onClick={() => setActiveTab('premium')}
+                style={{
+                  padding: '8px 20px',
+                  borderRadius: '20px',
+                  border: 'none',
+                  background: activeTab === 'premium' ? 'var(--primary-color)' : 'transparent',
+                  color: activeTab === 'premium' ? '#fff' : 'var(--text-color)',
+                  fontWeight: activeTab === 'premium' ? 'bold' : 'normal',
+                  cursor: 'pointer',
+                  transition: 'all 0.3s ease'
+                }}
+              >
+                ప్రీమియం (Premium)
+              </button>
+            </>
+          )}
           
           <select 
             value={selectedCategory} 
