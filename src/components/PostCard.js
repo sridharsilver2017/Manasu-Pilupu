@@ -22,7 +22,7 @@ export default function PostCard({ post }) {
     <div className="post-card" style={{ position: 'relative' }}>
       {imageUrl && (
         <div className="post-card-image-wrapper" style={{ position: 'relative' }}>
-          <Link href={`/posts/${post.slug}`} style={{ display: 'block', width: '100%', height: '100%' }} target="_blank" rel="noopener noreferrer">
+          <Link href={`/post?slug=${post.slug}`} style={{ display: 'block', width: '100%', height: '100%' }} target="_blank" rel="noopener noreferrer">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={imageUrl}
@@ -33,7 +33,7 @@ export default function PostCard({ post }) {
         </div>
       )}
       <div className="post-card-content">
-        <Link href={`/posts/${post.slug}`} style={{ textDecoration: 'none', color: 'inherit' }} target="_blank" rel="noopener noreferrer">
+        <Link href={`/post?slug=${post.slug}`} style={{ textDecoration: 'none', color: 'inherit' }} target="_blank" rel="noopener noreferrer">
           <h2
             className="post-card-title"
             dangerouslySetInnerHTML={{ __html: post.title.rendered }}
@@ -46,14 +46,14 @@ export default function PostCard({ post }) {
         <div className="post-card-meta">
           <div className="post-card-categories" style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
             {categories.map(cat => (
-              <Link href={`/category/${cat.slug}`} key={cat.id} style={{ fontSize: '0.7rem', backgroundColor: 'rgba(0, 20, 80, 0.85)', color: 'white', padding: '4px 10px', borderRadius: '20px', fontWeight: 'bold', textDecoration: 'none' }}>
+              <Link href={`/category?slug=${cat.slug}`} key={cat.id} style={{ fontSize: '0.7rem', backgroundColor: 'rgba(0, 20, 80, 0.85)', color: 'white', padding: '4px 10px', borderRadius: '20px', fontWeight: 'bold', textDecoration: 'none' }}>
                 {cat.name.replace(/&amp;/g, '&').replace(/&#038;/g, '&').replace(/&#8211;/g, '-')}
               </Link>
             ))}
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
             <LikeButton postId={post.id} style={{ padding: '4px 8px', fontSize: '12px', height: '28px' }} />
-            <Link href={`/posts/${post.slug}`} className="read-more-link" style={{ textDecoration: 'none' }} target="_blank" rel="noopener noreferrer">
+            <Link href={`/post?slug=${post.slug}`} className="read-more-link" style={{ textDecoration: 'none' }} target="_blank" rel="noopener noreferrer">
               మరింత చదవండి <span className="arrow">&rarr;</span>
             </Link>
           </div>
