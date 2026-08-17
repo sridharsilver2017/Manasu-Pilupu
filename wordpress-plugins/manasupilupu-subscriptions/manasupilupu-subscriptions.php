@@ -174,7 +174,13 @@ function mp_subs_get_me($request)
         $is_premium = true;
     }
 
-    return rest_ensure_response(array('id' => $user->ID, 'username' => $user->user_login, 'is_premium' => $is_premium));
+    $is_admin = in_array('administrator', (array) $user->roles);
+    return rest_ensure_response(array(
+        'id' => $user->ID, 
+        'username' => $user->user_login, 
+        'is_premium' => $is_premium,
+        'is_admin' => $is_admin
+    ));
 }
 
 // WEBHOOK (Cashfree)
