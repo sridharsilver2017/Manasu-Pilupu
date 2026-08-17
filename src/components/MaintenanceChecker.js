@@ -15,8 +15,8 @@ export default function MaintenanceChecker({ children }) {
 
   useEffect(() => {
     async function checkMaintenanceStatus() {
-      // Don't block the admin page
-      if (pathname === '/admin') {
+      // Don't block the admin page or login page
+      if (pathname === '/admin' || pathname === '/login') {
         return;
       }
       
@@ -39,8 +39,8 @@ export default function MaintenanceChecker({ children }) {
 
   // Removed the loading spinner to prevent blocking the initial render.
   // The check will happen silently in the background.
-  // If maintenance is true, show maintenance screen (unless on admin page or user is admin)
-  if (isMaintenance && pathname !== '/admin' && !user?.is_admin) {
+  // If maintenance is true, show maintenance screen (unless on admin/login page or user is admin)
+  if (isMaintenance && pathname !== '/admin' && pathname !== '/login' && !user?.is_admin) {
     return (
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', textAlign: 'center', padding: '20px', backgroundColor: '#0f172a' }}>
         <div style={{ maxWidth: '600px', background: 'rgba(30, 41, 59, 0.5)', padding: '40px', borderRadius: '16px', boxShadow: '0 10px 30px rgba(0,0,0,0.5)', border: '1px solid rgba(255, 255, 255, 0.08)' }}>
