@@ -54,6 +54,9 @@ export const metadata = {
     title: "మనసు పిలుపు | మనసులోంచి వచ్చిన మాటలు",
     description: "మనసులోంచి వచ్చిన మాటలు",
     images: ['https://manasupilupu.pages.dev/default-share.jpg'],
+  },
+  other: {
+    'google-adsense-account': process.env.NEXT_PUBLIC_ADSENSE_PUBLISHER_ID || 'ca-pub-3718093381606519'
   }
 };
 
@@ -145,7 +148,7 @@ export default function RootLayout({ children }) {
             async
             src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${process.env.NEXT_PUBLIC_ADSENSE_PUBLISHER_ID}`}
             crossOrigin="anonymous"
-            strategy="lazyOnload"
+            strategy="afterInteractive"
           />
         )}
       </body>
