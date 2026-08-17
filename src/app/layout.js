@@ -1,5 +1,6 @@
 import "./globals.css";
 import Link from "next/link";
+import { GoogleAnalytics } from '@next/third-parties/google';
 import { Ramabhadra, Mandali } from "next/font/google";
 import { Home, Phone, Heart } from "lucide-react";
 
@@ -137,6 +138,7 @@ export default function RootLayout({ children }) {
           </ThemeProvider>
           </MaintenanceChecker>
         </AuthProvider>
+        {process.env.NEXT_PUBLIC_GA_ID && <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID} />}
       </body>
     </html>
   );
