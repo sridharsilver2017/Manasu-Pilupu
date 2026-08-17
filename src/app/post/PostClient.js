@@ -8,6 +8,7 @@ import ShareButtons from './ShareButtons';
 import Comments from './Comments';
 import GoogleTranslate from '@/components/GoogleTranslate';
 import AppDownloadButton from '@/components/AppDownloadButton';
+import AdBanner from '@/components/AdBanner';
 import LikeButton from '../../components/LikeButton';
 
 function decodeHtmlEntities(text) {
@@ -315,6 +316,8 @@ export default function PostClient({ initialSlug, initialPost, initialAllPosts =
             </p>
           </div>
         )}
+
+        <AdBanner dataAdSlot={process.env.NEXT_PUBLIC_ADSENSE_BOTTOM_SLOT_ID} />
 
         <AppDownloadButton style={{ marginTop: '30px', marginBottom: '20px' }} />
       </div>

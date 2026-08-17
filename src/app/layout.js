@@ -1,5 +1,6 @@
 import "./globals.css";
 import Link from "next/link";
+import Script from "next/script";
 import { GoogleAnalytics } from '@next/third-parties/google';
 import { Ramabhadra, Mandali } from "next/font/google";
 import { Home, Phone, Heart } from "lucide-react";
@@ -139,6 +140,14 @@ export default function RootLayout({ children }) {
           </MaintenanceChecker>
         </AuthProvider>
         {process.env.NEXT_PUBLIC_GA_ID && <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID} />}
+        {process.env.NEXT_PUBLIC_ADSENSE_PUBLISHER_ID && (
+          <Script
+            async
+            src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${process.env.NEXT_PUBLIC_ADSENSE_PUBLISHER_ID}`}
+            crossOrigin="anonymous"
+            strategy="lazyOnload"
+          />
+        )}
       </body>
     </html>
   );
