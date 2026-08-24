@@ -10,6 +10,7 @@ import GoogleTranslate from '@/components/GoogleTranslate';
 import AppDownloadButton from '@/components/AppDownloadButton';
 import AdBanner from '@/components/AdBanner';
 import LikeButton from '../../components/LikeButton';
+import TextToSpeech from '@/components/TextToSpeech';
 
 function decodeHtmlEntities(text) {
   if (!text) return '';
@@ -190,6 +191,7 @@ export default function PostClient({ initialSlug, initialPost, initialAllPosts =
           className="post-content"
           style={{ position: 'relative' }}
         >
+          <TextToSpeech htmlContent={postContent} />
           <div dangerouslySetInnerHTML={{ __html: postContent }} />
           
           {isLocked && (
