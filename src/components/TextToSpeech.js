@@ -2,117 +2,159 @@
 
 import { useState, useEffect, useRef } from 'react';
 
-export default function TextToSpeech({ htmlContent, language = 'te-IN' }) {
+function chunkText(text, maxLen = 4000) {
+  const chunks = [];
+  let currentChunk = '';
+  // Split by common Telugu and English sentence endings
+  const sentences = text.split(/(?<=[.!?|])\s+/);
+  
+  for (const sentence of sentences) {
+    if ((currentChunk + sentence).length > maxLen) {
+      if (currentChunk) chunks.push(currentChunk);
+      // If a single sentence is incredibly long (rare), we'd need to split it further,
+      // but for standard blog posts, this is fine.
+      currentChunk = sentence;
+    } else {
+      currentChunk += (currentChunk ? ' ' : '') + sentence;
+    }
+  }
+  if (currentChunk) chunks.push(currentChunk);
+  return chunks;
+}
+
+export default function TextToSpeech({ htmlContent }) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
-  const [isSupported, setIsSupported] = useState(true);
-  const synth = typeof window !== 'undefined' ? window.speechSynthesis : null;
-  const utteranceRef = useRef(null);
-
-  const [availableVoices, setAvailableVoices] = useState([]);
-  const [selectedVoiceURI, setSelectedVoiceURI] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  
+  const [textChunks, setTextChunks] = useState([]);
+  const [currentChunkIndex, setCurrentChunkIndex] = useState(0);
+  const [audioSources, setAudioSources] = useState({}); // Cache base64 audio by chunk index
+  
+  const audioRef = useRef(null);
 
   useEffect(() => {
-    if (typeof window === 'undefined' || !window.speechSynthesis) {
-      // eslint-disable-next-line
-      setIsSupported(false);
-      return;
+    // Initialize audio element only once
+    if (!audioRef.current) {
+      audioRef.current = new Audio();
     }
-    
-    const updateVoices = () => {
-      const allVoices = synth.getVoices();
-      // Filter for Telugu voices, or fallback to all if none exist to avoid breaking entirely
-      let teluguVoices = allVoices.filter(v => v.lang.includes('te'));
-      if (teluguVoices.length === 0 && allVoices.length > 0) {
-        // As a fallback if OS has no explicit te-IN, we might just let them see all
-        teluguVoices = allVoices.slice(0, 5); // Just show a few to not overwhelm
-      }
+  }, []);
 
-      setAvailableVoices(teluguVoices);
-      
-      if (teluguVoices.length > 0 && !selectedVoiceURI) {
-        const bestVoice = teluguVoices.find(v => v.name.includes('Google')) 
-                       || teluguVoices.find(v => !v.localService) 
-                       || teluguVoices[0];
-        setSelectedVoiceURI(bestVoice.voiceURI);
+  // Update audio source when chunk index or audio sources change
+  useEffect(() => {
+    if (textChunks.length === 0) return;
+    
+    const playCurrentChunk = async () => {
+      if (audioSources[currentChunkIndex]) {
+        // We already have the audio for this chunk
+        if (audioRef.current.src !== audioSources[currentChunkIndex]) {
+          audioRef.current.src = audioSources[currentChunkIndex];
+        }
+        if (isPlaying && !isPaused) {
+          audioRef.current.play().catch(e => console.error("Audio play error:", e));
+        }
+      } else {
+        // Need to fetch it
+        setIsLoading(true);
+        try {
+          const response = await fetch('/api/tts', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+              text: textChunks[currentChunkIndex],
+              voiceName: 'te-IN-Standard-A' // Or any specific Google voice
+            }),
+          });
+          
+          if (!response.ok) {
+            throw new Error('Failed to fetch TTS audio');
+          }
+          
+          const data = await response.json();
+          const audioUrl = `data:audio/mp3;base64,${data.audioContent}`;
+          
+          setAudioSources(prev => ({ ...prev, [currentChunkIndex]: audioUrl }));
+          
+          audioRef.current.src = audioUrl;
+          if (isPlaying && !isPaused) {
+            audioRef.current.play().catch(e => console.error("Audio play error:", e));
+          }
+        } catch (error) {
+          console.error("TTS fetch error:", error);
+          setIsPlaying(false);
+          setIsPaused(false);
+        } finally {
+          setIsLoading(false);
+        }
       }
     };
 
-    updateVoices();
-    synth.onvoiceschanged = updateVoices;
-    
-    return () => {
-      if (synth) {
-        synth.cancel();
+    audioRef.current.onended = () => {
+      if (currentChunkIndex < textChunks.length - 1) {
+        setCurrentChunkIndex(prev => prev + 1);
+      } else {
+        setIsPlaying(false);
+        setIsPaused(false);
+        setCurrentChunkIndex(0);
       }
     };
-  }, [synth, selectedVoiceURI]);
+
+    audioRef.current.onerror = (e) => {
+      console.error("Audio playback error:", e);
+      setIsPlaying(false);
+      setIsPaused(false);
+    };
+
+    playCurrentChunk();
+  }, [currentChunkIndex, textChunks, isPlaying, isPaused, audioSources]);
+
 
   const extractTextFromHtml = (html) => {
     if (typeof window === 'undefined') return '';
     const tempDiv = document.createElement('div');
     tempDiv.innerHTML = html;
-    return tempDiv.textContent || tempDiv.innerText || '';
+    
+    // basic cleanup of text
+    return (tempDiv.textContent || tempDiv.innerText || '').replace(/\s+/g, ' ').trim();
   };
 
   const play = () => {
-    if (!synth) return;
-
     if (isPaused) {
-      synth.resume();
+      audioRef.current.play().catch(e => console.error(e));
       setIsPaused(false);
       setIsPlaying(true);
       return;
     }
 
-    const textToSpeak = extractTextFromHtml(htmlContent);
-    if (!textToSpeak.trim()) return;
-
-    const utterance = new SpeechSynthesisUtterance(textToSpeak);
-    utterance.lang = language;
-    utterance.rate = 0.85; // Slightly slower for calmer, clearer Telugu pronunciation
-    utterance.pitch = 0.95; // Slightly deeper pitch for a soothing voice
-
-    // Use the voice selected by the user
-    if (selectedVoiceURI) {
-      const voice = availableVoices.find(v => v.voiceURI === selectedVoiceURI);
-      if (voice) {
-        utterance.voice = voice;
-      }
+    if (textChunks.length === 0) {
+      const text = extractTextFromHtml(htmlContent);
+      if (!text) return;
+      const chunks = chunkText(text);
+      setTextChunks(chunks);
+      setCurrentChunkIndex(0);
     }
-
-    utterance.onend = () => {
-      setIsPlaying(false);
-      setIsPaused(false);
-    };
-
-    utterance.onerror = (e) => {
-      console.error("Speech synthesis error", e);
-      setIsPlaying(false);
-      setIsPaused(false);
-    };
-
-    utteranceRef.current = utterance;
-    synth.speak(utterance);
+    
     setIsPlaying(true);
     setIsPaused(false);
   };
 
   const pause = () => {
-    if (!synth) return;
-    synth.pause();
+    if (audioRef.current) {
+      audioRef.current.pause();
+    }
     setIsPaused(true);
     setIsPlaying(false);
   };
 
   const stop = () => {
-    if (!synth) return;
-    synth.cancel();
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+    }
     setIsPlaying(false);
     setIsPaused(false);
+    setCurrentChunkIndex(0);
   };
-
-  if (!isSupported) return null;
 
   return (
     <div className="text-to-speech-container" style={{
@@ -130,41 +172,23 @@ export default function TextToSpeech({ htmlContent, language = 'te-IN' }) {
           <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
           <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
         </svg>
-        <span style={{ fontSize: '0.95rem', fontWeight: '500' }}>Listen to Article</span>
+        <span style={{ fontSize: '0.95rem', fontWeight: '500' }}>Listen to Article (Premium Voice)</span>
       </div>
       
       <div style={{ display: 'flex', gap: '8px', marginLeft: 'auto', alignItems: 'center' }}>
-        {availableVoices.length > 0 && (
-          <select 
-            value={selectedVoiceURI} 
-            onChange={(e) => setSelectedVoiceURI(e.target.value)}
-            style={{
-              padding: '6px 10px',
-              borderRadius: '8px',
-              border: '1px solid var(--border-color, rgba(0,0,0,0.1))',
-              background: 'var(--bg-color, #fff)',
-              color: 'var(--text-color, #333)',
-              fontSize: '0.85rem',
-              marginRight: '10px',
-              maxWidth: '120px',
-              outline: 'none',
-              cursor: 'pointer'
-            }}
-            title="Select Voice"
-          >
-            {availableVoices.map(v => (
-              <option key={v.voiceURI} value={v.voiceURI}>
-                {v.name}
-              </option>
-            ))}
-          </select>
-        )}
         
+        {isLoading && (
+          <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginRight: '8px' }}>
+            Loading voice...
+          </span>
+        )}
+
         {!isPlaying ? (
           <button 
             onClick={play}
+            disabled={isLoading}
             style={{
-              background: 'var(--primary-color, #4f46e5)',
+              background: isLoading ? '#ccc' : 'var(--primary-color, #4f46e5)',
               color: 'white',
               border: 'none',
               borderRadius: '50%',
@@ -173,9 +197,10 @@ export default function TextToSpeech({ htmlContent, language = 'te-IN' }) {
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              cursor: 'pointer',
+              cursor: isLoading ? 'not-allowed' : 'pointer',
               transition: 'transform 0.2s, background 0.2s',
-              boxShadow: '0 2px 5px rgba(0,0,0,0.2)'
+              boxShadow: '0 2px 5px rgba(0,0,0,0.2)',
+              opacity: isLoading ? 0.6 : 1
             }}
             title={isPaused ? "Resume" : "Play"}
           >
