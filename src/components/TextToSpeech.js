@@ -9,6 +9,9 @@ export default function TextToSpeech({ htmlContent, language = 'te-IN' }) {
   const synth = typeof window !== 'undefined' ? window.speechSynthesis : null;
   const utteranceRef = useRef(null);
 
+  const [availableVoices, setAvailableVoices] = useState([]);
+  const [selectedVoiceURI, setSelectedVoiceURI] = useState('');
+
   useEffect(() => {
     if (typeof window === 'undefined' || !window.speechSynthesis) {
       // eslint-disable-next-line
@@ -16,22 +19,34 @@ export default function TextToSpeech({ htmlContent, language = 'te-IN' }) {
       return;
     }
     
-    // Attempt to load voices to check support
-    const voices = synth.getVoices();
-    if (voices.length === 0) {
-        synth.onvoiceschanged = () => {
-            if (synth.getVoices().length === 0) {
-                // setIsSupported(false);
-            }
-        };
-    }
+    const updateVoices = () => {
+      const allVoices = synth.getVoices();
+      // Filter for Telugu voices, or fallback to all if none exist to avoid breaking entirely
+      let teluguVoices = allVoices.filter(v => v.lang.includes('te'));
+      if (teluguVoices.length === 0 && allVoices.length > 0) {
+        // As a fallback if OS has no explicit te-IN, we might just let them see all
+        teluguVoices = allVoices.slice(0, 5); // Just show a few to not overwhelm
+      }
+
+      setAvailableVoices(teluguVoices);
+      
+      if (teluguVoices.length > 0 && !selectedVoiceURI) {
+        const bestVoice = teluguVoices.find(v => v.name.includes('Google')) 
+                       || teluguVoices.find(v => !v.localService) 
+                       || teluguVoices[0];
+        setSelectedVoiceURI(bestVoice.voiceURI);
+      }
+    };
+
+    updateVoices();
+    synth.onvoiceschanged = updateVoices;
     
     return () => {
       if (synth) {
         synth.cancel();
       }
     };
-  }, [synth]);
+  }, [synth, selectedVoiceURI]);
 
   const extractTextFromHtml = (html) => {
     if (typeof window === 'undefined') return '';
@@ -58,24 +73,12 @@ export default function TextToSpeech({ htmlContent, language = 'te-IN' }) {
     utterance.rate = 0.85; // Slightly slower for calmer, clearer Telugu pronunciation
     utterance.pitch = 0.95; // Slightly deeper pitch for a soothing voice
 
-    // Find the best available Telugu voice
-    const voices = synth.getVoices();
-    
-    // 1. Prioritize Google/Network voices (most natural, free cloud-based voices in Chrome/Android)
-    let bestVoice = voices.find(v => (v.lang.includes('te')) && v.name.includes('Google'));
-    
-    // 2. Fallback to any non-local (network) voice for better quality
-    if (!bestVoice) {
-      bestVoice = voices.find(v => (v.lang.includes('te')) && !v.localService);
-    }
-    
-    // 3. Fallback to any available Telugu voice
-    if (!bestVoice) {
-      bestVoice = voices.find(v => v.lang.includes('te'));
-    }
-                     
-    if (bestVoice) {
-      utterance.voice = bestVoice;
+    // Use the voice selected by the user
+    if (selectedVoiceURI) {
+      const voice = availableVoices.find(v => v.voiceURI === selectedVoiceURI);
+      if (voice) {
+        utterance.voice = voice;
+      }
     }
 
     utterance.onend = () => {
@@ -130,7 +133,33 @@ export default function TextToSpeech({ htmlContent, language = 'te-IN' }) {
         <span style={{ fontSize: '0.95rem', fontWeight: '500' }}>Listen to Article</span>
       </div>
       
-      <div style={{ display: 'flex', gap: '8px', marginLeft: 'auto' }}>
+      <div style={{ display: 'flex', gap: '8px', marginLeft: 'auto', alignItems: 'center' }}>
+        {availableVoices.length > 0 && (
+          <select 
+            value={selectedVoiceURI} 
+            onChange={(e) => setSelectedVoiceURI(e.target.value)}
+            style={{
+              padding: '6px 10px',
+              borderRadius: '8px',
+              border: '1px solid var(--border-color, rgba(0,0,0,0.1))',
+              background: 'var(--bg-color, #fff)',
+              color: 'var(--text-color, #333)',
+              fontSize: '0.85rem',
+              marginRight: '10px',
+              maxWidth: '120px',
+              outline: 'none',
+              cursor: 'pointer'
+            }}
+            title="Select Voice"
+          >
+            {availableVoices.map(v => (
+              <option key={v.voiceURI} value={v.voiceURI}>
+                {v.name}
+              </option>
+            ))}
+          </select>
+        )}
+        
         {!isPlaying ? (
           <button 
             onClick={play}
