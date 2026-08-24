@@ -55,7 +55,28 @@ export default function TextToSpeech({ htmlContent, language = 'te-IN' }) {
 
     const utterance = new SpeechSynthesisUtterance(textToSpeak);
     utterance.lang = language;
-    utterance.rate = 0.9; // Slightly slower for better comprehension
+    utterance.rate = 0.85; // Slightly slower for calmer, clearer Telugu pronunciation
+    utterance.pitch = 0.95; // Slightly deeper pitch for a soothing voice
+
+    // Find the best available Telugu voice
+    const voices = synth.getVoices();
+    
+    // 1. Prioritize Google/Network voices (most natural, free cloud-based voices in Chrome/Android)
+    let bestVoice = voices.find(v => (v.lang.includes('te')) && v.name.includes('Google'));
+    
+    // 2. Fallback to any non-local (network) voice for better quality
+    if (!bestVoice) {
+      bestVoice = voices.find(v => (v.lang.includes('te')) && !v.localService);
+    }
+    
+    // 3. Fallback to any available Telugu voice
+    if (!bestVoice) {
+      bestVoice = voices.find(v => v.lang.includes('te'));
+    }
+                     
+    if (bestVoice) {
+      utterance.voice = bestVoice;
+    }
 
     utterance.onend = () => {
       setIsPlaying(false);
